@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Portafolio Artístico - [YAN]</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/rutsty/web_test/refs/heads/main/favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --color-primario: #51d1f6;
+            --color-secundario: rgba(81, 209, 246, 0.7);
+            --fondo: white;
+        }
+        
+        body {
+            margin: 0;
+            background-color: var(--fondo);
+            color: var(--color-primario);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            
+        }
+
+        /* Cursor personalizado */
+        #custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background-color: var(--color-primario);
+            border-radius: 50%;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 4px var(--color-secundario));
+            transition: opacity 0.3s, transform 0.1s;
+        }
+
+        #custom-cursor.active {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+
+        /* Menú de navegación */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--fondo);
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav li {
+            margin: 0 20px;
+        }
+
+        nav a {
+            color: var(--color-primario);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover, nav a.active {
+            border-bottom: 2px solid var(--color-primario);
+        }
+
+        /* Secciones */
+        section {
+            min-height: 100vh;
+            padding: 80px 20px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #inicio {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--color-secundario);
+            z-index: 10;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--color-primario);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        .palabras-clave {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            position: relative; /* Para asegurar el z-index */
+            z-index: 10;
+        }
+
+        .palabra {
+            padding: 8px 15px;
+            border: 1px solid var(--color-primario);
+            border-radius: 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .palabra:hover {
+            background-color: var(--color-secundario);
+            transform: translateY(-3px);
+        }
+
+        /* Onda sonora interactiva */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .pie-foto {
+            font-size: 0.9rem;
+            color: var(--color-primario);
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* Efecto de palabras flotantes */
+        .floating-word {
+            position: absolute;
+            font-size: 1.2rem;
+            color: var(--color-primario);
+            opacity: 1;
+            transition: opacity 5s, transform 20s linear;
+            z-index: 5;
+            pointer-events: none;
+            text-shadow: 0 0 5px var(--color-secundario);
+        }
+        
+        .video-container, .video-showcase {
+          position: relative;
+          padding-bottom: 56.25%; /* proporción 16:9 */
+          height: 0;
+          overflow: hidden;
+          margin-top: 20px;
+          margin-bottom: 10px;
+          border-radius: 12px;
+          box-shadow: 0 0 15px var(--color-secundario);
+        }
+
+        .video-container iframe, .video-showcase iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: 0;
+        }
+
+        /* --- ESTILOS PARA EL SLIDER --- */
+        .slider-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            scroll-behavior: smooth;
+            border: 1px solid var(--color-secundario);
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .slide {
+            flex: 0 0 90%;
+            max-width: 800px;
+            scroll-snap-align: center;
+            text-align: center;
+        }
+
+        .slide img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .slider-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .slider-container::-webkit-scrollbar-track {
+            background: #e6f1f9;
+            border-radius: 10px;
+        }
+
+        .slider-container::-webkit-scrollbar-thumb {
+            background-color: #89c5e0;
+            border-radius: 10px;
+            border: 2px solid #e6f1f9;
+        }
+
+        .slider-container {
+            scrollbar-color: #89c5e0 #e6f1f9;
+            scrollbar-width: thin;
+        }
+        
+        /* --- ESTILO PARA INFO FORMAL --- */
+        .info-formal {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--color-primario);
+            opacity: 0.7;
+            z-index: 10;
+            padding: 0 20px;
+        }
+
+        /* --- ESTILOS PARA GIF DE INICIO --- */
+        .hero-gif-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 30px 0;
+            position: relative; /* Para asegurar el z-index */
+            z-index: 10;
+        }
+
+        .hero-gif-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(81, 209, 246, 0.4);
+        }
+
+        /* Estilo para el texto de introducción */
+        .intro-text {
+            max-width: 800px;
+            margin: 20px auto;
+            z-index: 10;
+            position: relative;
+        }
+        .intro-text .question {
+            font-weight: bold;
+            display: block; /* Asegura que esté en su propia línea */
+            margin-bottom: 1em; /* Espacio después de la pregunta */
+        }
+
+        /* --- ESTILOS PARA OBRA SERIADA INTERACTIVA --- */
+        .obra-seriada-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .monitor {
+            width: 100%;
+            max-width: 350px;
+            text-decoration: none;
+            color: var(--color-primario);
+            transition: transform 0.3s ease;
+        }
+        .monitor:hover {
+            transform: translateY(-10px);
+        }
+        .monitor-screen {
+            position: relative;
+            border: 2px solid var(--color-secundario);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f0faff;
+            box-shadow: 0 10px 20px rgba(81, 209, 246, 0.2);
+            aspect-ratio: 16 / 9; /* Asegura que todos los monitores tengan el mismo tamaño */
+        }
+        .monitor-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Hace que la imagen cubra el espacio sin deformarse */
+            display: block;
+        }
+        .monitor-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(81, 209, 246, 0.7);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 1.2rem;
+            padding: 10px;
+        }
+        .monitor:hover .monitor-overlay {
+            opacity: 1;
+        }
+        .monitor-title {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 3em; /* Espacio para que los títulos no muevan el layout */
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav li {
+                margin: 5px 0;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .slide {
+                flex: 0 0 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cursor personalizado -->
+    <div id="custom-cursor"></div>
+    
+    <!-- Onda sonora interactiva -->
+    <canvas id="osciloscopio"></canvas>
+
+    <!-- Menú de navegación -->
+    <nav>
+        <ul>
+            <li><a href="#inicio" class="active">Inicio</a></li>
+            <li><a href="#antecedentes">Antecedentes</a></li>
+            <li><a href="#exploracion">Exploración</a></li>
+            <li><a href="#confeccion">Confección</a></li>
+            <li><a href="#obra">Obra</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sección Inicio -->
+    <section id="inicio">
+      <h1>Tres maneras en las que te cuidé<br><i>(aunque no sepas)</i></h1>
+    
+      <div class="palabras-clave">
+        <div class="palabra">Interfaz</div>
+        <div class="palabra">Afecto</div>
+        <div class="palabra">Tecnoternura</div>
+        <div class="palabra">Presencia</div>
+        <div class="palabra">Memoria</div>
+      </div>
+
+      <!-- INICIO CON GIF -->
+      <div class="hero-gif-container">
+        <img src="https://cdn.discordapp.com/attachments/1394477475664498818/1397060264536440852/portadas.gif?ex=68805943&is=687f07c3&hm=c22930ec800549bb8cdea0e475b6007b47ecf6088f7b0412175ddc1b69ed0133&" alt="Animación de las tres pantallas de la obra">
+      </div>
+    
+      <div class="intro-text">
+        <p>
+          <span class="question">¿Puede una máquina ofrecer ternura?</span>
+          Esta obra explora el cuidado como gesto extendido en lo digital. Tres interfaces sensibles nos invitan a habitar la tecnología no como herramienta productiva, sino como espacio afectivo.
+        </p>
+      </div>
+    
+      <!-- INFORMACIÓN FORMAL -->
+      <div class="info-formal">
+        <p>Proyecto desarrollado por Yan para el Taller de Producción Visual 1, guiado por el docente Paulo Arias, Departamento de Artes Plásticas UdeC</p>
+      </div>
+    </section>
+
+    <!-- Sección Antecedentes -->
+    <section id="antecedentes">
+        <h2>Antecedentes</h2>
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            <p>Esta sección presenta el recorrido conceptual y técnico que dio origen a la obra actual. Una investigación que cruza la memoria, el afecto, el cuerpo y la tecnología.</p>
+            
+            <h3>Desarrollo</h3>
+            <p>Mi investigación nace desde el gesto primario del arrullo. Ese movimiento sonoro y corporal que cuida, que abraza, que acompaña. A través de proyectos exploratorio-previos como Caja de Memoria y el libro de artista, exploré cómo los objetos tecnológicos pueden funcionar como extensiones del afecto.</p>
+            
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/PlQX-3CUkKI?rel=0&modestbranding=1&showinfo=0"
+                        title="Libro de Artista - Poemas Aleatorios"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </div>
+            <p class="pie-foto">Libro de artista con poemas aleatorios programados en Arduino. Mi primer acercamiento a la sensibilidad poética a través del código.</p>
+
+            <p>En primera instancia pensé en este proyecto como almohadas sensibles que reaccionaban a la presencia. Esta pieza marcó un quiebre: la tecnología no era solo herramienta, sino posibilidad de afecto. Me apoyé en referentes como Baudrillard, Haraway y Massumi para reflexionar sobre el simulacro, el cuerpo-máquina y la interfaz como espacio sensible.</p>
+            <p>Con el tiempo, abandoné la materialidad textil. Las telas, los hilos tensores, los sensores físicos no lograban traducir la emocionalidad buscada. Migré a las pantallas, lugar donde ya había trabajado previamente con código, tracking y programación de reactividad. Las pantallas se convirtieron en “almohadas digitales” donde el afecto se desplegaba desde lo visual y lo interactivo.</p>
+            
+            <h3>Conclusiones</h3>
+            <p>Desde la cabecera que contenía hasta la pantalla que reacciona, mi práctica ha sido una búsqueda por humanizar lo tecnológico. 
+Esta transición entre objetos sensibles no niega el pasado, sino que lo expande. La ternura, el arrullo, la escucha en la era digital no desaparece, solo se transforman.</p>
+        </div>
+    </section>
+
+    <!-- Sección Exploración Visual -->
+    <section id="exploracion">
+      <h2>Exploración Visual</h2>
+    
+      <div style="max-width: 800px; margin: 0 auto;">
+    
+        <h3>Introducción</h3>
+        <p>
+          Esta etapa busca esclarecer visual y conceptualmente los rasgos principales del proyecto <i>Tres maneras en las que te cuidé (aunque no lo sepas)</i>.
+          El objetivo es definir una propuesta visual coherente con la poética del cuidado, estableciendo relaciones entre la serie de obras (las tres pantallas), 
+          el lenguaje medial y los vínculos simbólicos que se construyen en torno a la identidad, el territorio afectivo y la interfaz como espacio de contención.
+          La visualidad se convierte aquí en un lenguaje sensible que permite materializar lo intangible.
+        </p>
+    
+        <h3>Desarrollo</h3>
+    
+        <h4>1. Estructura serial de la obra</h4>
+        <p>La obra se compone de tres pantallas, cada una diseñada como una interfaz sensible con identidad propia.</p>
+        <ul>
+          <li><strong>Pantalla 1:</strong> Tracking facial + motion trail (simula arrullo visual).</li>
+          <li><strong>Pantalla 2:</strong> Voz a texto flotante (arrullo conversacional).</li>
+          <li><strong>Pantalla 3:</strong> Memorias + sonido aleatorio (evoca cuidado en ausencia).</li>
+        </ul>
+    
+        <h4>2. Experimentación técnica y visual</h4>
+        <p>Durante esta etapa se testearon distintos efectos de visualización con énfasis en construir una atmósfera poética:</p>
+        <ul>
+          <li><i>Motion trail</i>, desenfoque y eco visual.</li>
+          <li>Tracking facial con retardo temporal.</li>
+          <li>Tipografía animada (susurros visuales).</li>
+          <li><i>Speech-to-text</i> para transformar sonido en texto flotante.</li>
+        </ul>
+    
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/kxE5_eTxIIM?rel=0&modestbranding=1&showinfo=0"
+                  title="Test de tracking facial y motion trail"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <p class="pie-foto">Test de tracking facial y motion trail | Prototipo técnico | © Yan</p>
+    
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/iHEdErWGGL4?rel=0&modestbranding=1&showinfo=0"
+                  title="Onda sonora"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <p class="pie-foto">Visualización de onda sonora | Exploración técnica | © Yan</p>
+    
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/UKqoms3J91I?rel=0&modestbranding=1&showinfo=0"
+                  title="Voz a texto + onda sonora"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <p class="pie-foto">Transformación de voz en texto flotante | Pantalla 2 | © Yan</p>
+    
+        <h4>3. Relación con territorio/identidad</h4>
+        <p>
+          El territorio que habita esta obra no es geográfico, sino afectivo y digital. Es un espacio emocional compartido entre el cuerpo y la interfaz. 
+          Las pantallas se convierten en nuevos lugares donde se experimenta el cuidado, la presencia y la memoria.
+        </p>
+    
+        <h4>Ideas que no fueron (pero importan)</h4>
+        <p>En el camino surgieron ideas que, aunque descartadas, enriquecieron el lenguaje del proyecto:</p>
+    
+        <p><strong>Almohadas sensibles:</strong> construidas con tela, sensores de presión y microcontroladores. La reacción afectiva no era suficientemente delicada, por lo que se migró hacia pantallas sensibles.</p>
+        
+        <div class="slider-container">
+            <div class="slider-wrapper">
+              <div class="slide">
+                <img src="https://i.postimg.cc/wBtH0Qsf/almohada-1.png" alt="Almohadas de tela">
+                <p class="pie-foto">Prototipo de almohadas de tela con sensores. | © Yan</p>
+              </div>
+              <div class="slide">
+                <img src="https://i.postimg.cc/t4vp3M7n/almohada-2.png" alt="Interfaz con imagen de almohada">
+                <p class="pie-foto">Test de interfaz con imagen de almohada. | © Yan</p>
+              </div>
+            </div>
+        </div>
+
+        <p><strong>Tracking facial melódico:</strong> generaba notas musicales a partir de los puntos del rostro. Aunque sugerente, el efecto era más lúdico que poético.</p>
+    
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/SSO7DNPq8AU?rel=0&modestbranding=1&showinfo=0"
+                  title="Idea descartada - Tracking facial melódico"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <p class="pie-foto">Idea descartada: tracking facial melódico | Exploración sonora | © Yan</p>
+        <h3>Conclusiones</h3>
+        <p>
+          Esta etapa permitió afinar la visualidad y reafirmar el discurso poético de la obra. 
+          Cada decisión estética respondió a la premisa de que el afecto también puede codificarse y que la interfaz puede contener una caricia.
+        </p>
+        <p>
+          Las limitaciones técnicas también fueron importantes: impulsaron a buscar soluciones accesibles y ligeras sin sacrificar sensibilidad.
+        </p>
+    
+      </div>
+    </section>
+    
+    <!-- Sección Confección -->
+    <section id="confeccion">
+      <h2>Confección</h2>
+    
+      <div style="max-width: 800px; margin: 0 auto;">
+    
+        <h3>Introducción</h3>
+        <p>
+          Esta etapa marca la transición de la idea al cuerpo real de la obra. Aquí, la sensibilidad digital toma forma, y los códigos, pantallas y visualidades
+          se entrelazan para encarnar la ternura. La confección fue un momento de ajustes, de ensayo, de error y redescubrimiento.
+        </p>
+    
+        <h3>Proceso de creación</h3>
+    
+        <div style="margin-bottom: 40px;">
+          <h4>Programación funcional y visual de Pantalla 1</h4>
+          <p>
+            La primera pantalla fue concebida como una interfaz que "arrulla con la mirada". A través de tracking facial en tiempo real,
+            se genera un efecto de <i>motion trail</i> que responde a la presencia. Esta capa de visualidad onírica se construyó
+            combinando efectos de desenfoque, retardo visual y persistencia de movimiento. Esta interacción tiene una duración total de 3 minutos desde que capta un rostro. Sin embargo, el sistema buscará un rostro cada 30 segundos; si no lo encuentra, la interacción finaliza.  </p>
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/8fv4CyjlF6I?rel=0&modestbranding=1" 
+                    title="Pantalla 1 - Final test" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+          </div>
+          <p class="pie-foto">Pantalla 1: tracking facial + motion trail | Prototipo funcional | © Yan</p>
+        </div>
+    
+        <div style="margin-bottom: 40px;">
+          <h4>Programación de la experiencia texto de escucha en Pantalla 2</h4>
+          <p>
+            Esta interfaz escucha las palabras de quien se aproxima, transformándolas en texto flotante. El uso de <i>speech-to-text</i>
+            y su visualización lenta emulan un susurro digital. Las pruebas incluyeron visualización de onda sonora y calibración de sensibilidad al sonido ambiente. La interacción se mantiene activa mientras detecta palabras, con una duración máxima de 3 minutos. Si deja de percibir la voz, la secuencia termina.
+          </p>
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/1sqeP7CIjCo?rel=0&modestbranding=1" 
+                    title="Pantalla 2 - Final test" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+          </div>
+          <p class="pie-foto">Pantalla 2: conversión de voz a texto flotante | Prototipo final | © Yan</p>
+        </div>
+    
+        <div style="margin-bottom: 40px;">
+          <h4>Diseño sonoro y visual de Pantalla 3</h4>
+          <p>
+            Esta pantalla reproduce recuerdos anónimos enviados por otrxs, acompañados de un efecto sonoro aleatorio que genera una melodía irrepetible.
+            Cada recuerdo activa un sonido distinto, simulando un arrullo auditivo. Se probaron múltiples tonos hasta lograr un efecto envolvente y afectivo. Esta pantalla funciona como un bucle autónomo. No necesita interacción para activarse, cumple su ciclo y se reinicia.
+          </p>
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/25XcmmGI1eY?rel=0&modestbranding=1" 
+                    title="Pantalla 3 - Final test" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+          </div>
+          <p class="pie-foto">Pantalla 3: memoria + diseño sonoro aleatorio | Prototipo final | © Yan</p>
+        </div>
+    
+        <div style="margin-bottom: 40px;">
+          <h4>Testeo y ajuste de efectos sonoros</h4>
+          <p>
+            Diferentes pruebas de la pantalla 3: primero sin efecto de sonido, luego con distintas notas musicales hasta lograr el efecto de susurro y arrullo digital.
+            Las melodías se generan de forma aleatoria para que cada recuerdo proyectado produzca una respuesta sonora única.
+          </p>
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/TvQN6x04r64?rel=0&modestbranding=1" 
+                    title="Pantalla 3 - Sonido aleatorio" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+          </div>
+          <p class="pie-foto">Variaciones sonoras en Pantalla 3: de silencio al arrullo digital | © Yan</p>
+        </div>
+    
+      <div style="margin-bottom: 40px;">
+      <h4>Flujos de trabajo</h4>
+      <p>
+        Para planificar la lógica interna de cada pantalla, desarrollé flujos de trabajo escritos a mano. Estos esquemas me ayudaron a visualizar el estado de cada sistema, sus tiempos, transiciones y condiciones de activación, permitiendo una codificación coherente con la poética de la obra. Cada interacción está programada para una duración máxima de 3 minutos, pero existen condicionantes, como la permanencia del espectador, que pueden acortar estos tiempos.
+      </p>
+    
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <div class="slide">
+            <img src="https://i.postimg.cc/VvtPWZym/flujo1.png" alt="Flujo de trabajo 1">
+            <p class="pie-foto">Flujo 1 | Ciclo completo de activación por presencia y activación de camara | © Yan</p>
+          </div>
+          <div class="slide">
+            <img src="https://i.postimg.cc/bNXhwPbJ/flujo2.png" alt="Flujo de trabajo 2">
+            <p class="pie-foto">Flujo 2 | Secuencia lógica de mensajes y uso de microfono | © Yan</p>
+          </div>
+          <div class="slide">
+            <img src="https://i.postimg.cc/QNKDDCFw/flujo3.png" alt="Flujo de trabajo 3">
+            <p class="pie-foto">Flujo 3 | Lógica de interfaz, acciones y reacciones | © Yan</p>
+          </div>
+        </div>
+      </div>
+    </div>
+        <h3>Conclusiones</h3>
+        <p>
+          La confección fue una etapa fundamental para consolidar el lenguaje técnico-afectivo del proyecto. No se trató solo de programar funciones,
+          sino de cuidar los tiempos, gestos y atmósferas de cada pantalla. La obra, al tomar cuerpo, reveló nuevas posibilidades sensoriales
+          y también sus propios límites tecnológicos.
+        </p>
+        <p>
+          Las pruebas confirmaron que cada interfaz debía ser sensible, pausada y no invasiva. Esta etapa reafirmó que lo digital puede simular
+          la ternura si se programa con afecto y se piensa desde el cuerpo. La obra no solo funciona, sino que cuida.
+        </p>
+      </div>
+    </section>
+    
+    <!-- Sección Obra Final -->
+    <section id="obra">
+        <h2>Obra</h2>
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h3>Título: <i>Tres maneras en las que te cuidé (aunque no lo sepas)</i></h3>
+            
+            <div class="palabras-clave">
+                <div class="palabra">Interfaz</div>
+                <div class="palabra">Afecto</div>
+                <div class="palabra">Tecnoternura</div>
+                <div class="palabra">Presencia</div>
+                <div class="palabra">Memoria</div>
+            </div>
+            
+            <h3>Abstract</h3>
+            <p>
+                ¿Cómo cuidamos? ¿Cómo entregamos ternura?<br>
+                Crecemos, mutamos, amamos. Nos sumergimos en un mar de hiperconectividad, en una corriente de estímulos que nos moldea, en ruidos de antenas de alta tensión que nos arrullan hasta dormir.<br><br>
+                <i>Tres maneras en las que te cuidé (aunque no lo sepas)</i> es una instalación medial compuesta por tres pantallas que encarnan formas del cuidado: el arrullo, la escucha y la permanencia. Inspirada en la idea de la tecnoternura, la obra se pregunta si es posible habitar la tecnología como un espacio sensible, donde lo digital no sea una herramienta fría de productividad, sino una extensión del afecto humano de nuestras conexiones y memoria.
+                Cada pantalla actúa como una interfaz sensible que se activa, donde el cuerpo se vuelve indispensable, no solo como espectador, sino como agente de afecto. La obra traduce sensaciones como la mirada que contiene, la palabra que es escuchada y el recuerdo que persiste. A través del uso de diversos sensores, cada interfaz reacciona de manera distinta, contenedora y sensible.
+                La obra está atravesada por conceptos como el simulacro, el apego, la ausencia, el eco digital y la hipervigilancia. Busca visibilizar lo invisible: las formas en que cuidamos y somos cuidados incluso sin saberlo. Al interactuar, se instala la pregunta ¿puede una máquina ofrecer ternura, contener, escuchar y permanecer?
+            </p>
+            
+            <h3>Ficha técnica</h3>
+            <ul>
+                <li><strong>Autor:</strong> Yan </li>
+                <li><strong>Fecha:</strong> 20/ 07 / 25 </li>
+                <li><strong>Técnica:</strong> Obra medial</li>
+                <li><strong>Materiales:</strong> Interfaces gráficas + código </li>
+                <li><strong>Dimensiones:</strong> Variables </li>
+            </ul>
+            
+            <h3>Obra seriada</h3>
+            <div class="obra-seriada-container">
+                <!-- Pantalla 1 -->
+                <a href="https://pantalla1.vercel.app" target="_blank" class="monitor">
+                    <div class="monitor-screen">
+                        <img src="https://i.postimg.cc/bNm19hnR/pantalla1.png" alt="Previsualización de la Pantalla 1">
+                        <div class="monitor-overlay">Haz clic para<br>interactuar</div>
+                    </div>
+                    <p class="monitor-title">Cuando me viste, sentí que existía. Te arrullé.</p>
+                </a>
+
+                <!-- Pantalla 2 -->
+                <a href="https://pantalla-2.vercel.app" target="_blank" class="monitor">
+                    <div class="monitor-screen">
+                        <img src="https://i.postimg.cc/x17HB3tJ/pantalla2.png" alt="Previsualización de la Pantalla 2">
+                        <div class="monitor-overlay">Haz clic para<br>interactuar</div>
+                    </div>
+                    <p class="monitor-title">Te escuché e intenté cuidarte. ¿Me hablas?</p>
+                </a>
+
+                <!-- Pantalla 3 -->
+                <a href="https://pantalla3.vercel.app/" target="_blank" class="monitor">
+                    <div class="monitor-screen">
+                        <img src="https://i.postimg.cc/P5NY6Rzn/pantalla3.png" alt="Previsualización de la Pantalla 3">
+                        <div class="monitor-overlay">Haz clic para<br>interactuar</div>
+                    </div>
+                    <p class="monitor-title">Me quedé cuidándote, incluso cuando ya te habías ido.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Configuración del canvas y onda sonora
+        const canvas = document.getElementById('osciloscopio');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let animationId;
+
+        // Palabras flotantes interactivas
+        const keywords = ["Interfaz", "Afecto", "Tecnoternura", "Ausencia", "Arrullo"];
+        let floatingWords = [];
+
+        // Inicializar
+        function init() {
+            resizeCanvas();
+            setupCursor();
+            simulateWave();
+            setupNavigation();
+            createFloatingWords();
+            window.addEventListener('resize', resizeCanvas);
+        }
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        // Configuración del cursor personalizado
+        function setupCursor() {
+            const cursor = document.getElementById('custom-cursor');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            document.querySelectorAll('a, button, input, .palabra, .item-proceso, .hero-gif-container img, .monitor').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
+        }
+
+        // Onda simulada
+        function simulateWave() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#51d1f6';
+            ctx.beginPath();
+            
+            for (let x = 0; x < width; x++) {
+                const time = Date.now() * 0.002;
+                const y = height/2 + 
+                          Math.sin(x * 0.02 + time) * 50 + 
+                          Math.sin(x * 0.05 + time * 1.3) * 20 +
+                          Math.sin(x * 0.01 + time * 0.7) * 30;
+                
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            
+            ctx.stroke();
+            animationId = requestAnimationFrame(simulateWave);
+        }
+
+        // Navegación suave y activa con scroll
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // Crear palabras flotantes
+        function createFloatingWords() {
+            for (let i = 0; i < 15; i++) {
+                addFloatingWord();
+            }
+            setInterval(addFloatingWord, 3000);
+            animateFloatingWords();
+        }
+
+        function addFloatingWord() {
+            const word = document.createElement('div');
+            word.className = 'floating-word';
+            word.textContent = keywords[Math.floor(Math.random() * keywords.length)];
+            
+            word.style.left = Math.random() * width + 'px';
+            word.style.top = Math.random() * height + 'px';
+            word.style.opacity = Math.random() * 0.5 + 0.5;
+            word.style.fontSize = (Math.random() * 0.8 + 0.8) + 'rem';
+            
+            document.body.appendChild(word);
+            floatingWords.push({
+                element: word,
+                x: parseFloat(word.style.left),
+                y: parseFloat(word.style.top),
+                speedX: (Math.random() - 0.5) * 0.2,
+                speedY: Math.random() * -0.3 - 0.1
+            });
+        }
+
+        function animateFloatingWords() {
+            floatingWords.forEach(wordObj => {
+                wordObj.x += wordObj.speedX;
+                wordObj.y += wordObj.speedY;
+                
+                if (wordObj.x < 0 || wordObj.x > width) wordObj.speedX *= -1;
+                if (wordObj.y < 0) {
+                    wordObj.y = height;
+                    wordObj.x = Math.random() * width;
+                }
+                
+                wordObj.element.style.left = wordObj.x + 'px';
+                wordObj.element.style.top = wordObj.y + 'px';
+                
+                if (wordObj.y > height + 50) {
+                    wordObj.element.remove();
+                    floatingWords = floatingWords.filter(w => w !== wordObj);
+                }
+            });
+            
+            requestAnimationFrame(animateFloatingWords);
+        }
+
+        // Iniciar todo cuando se cargue la página
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
