@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bio / CV - [YAN] </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/favicon.ico" type="image/x-icon">
+    <style>
+        /* Estilos de terminal compartidos */
+        :root {
+            --color-primario: #51d1f6;
+            --color-secundario: rgba(81, 209, 246, 0.3);
+            --fondo: #0a0f0a;
+            --fondo-terminal: rgba(81, 209, 246, 0.05);
+        }
+
+        /* Arreglo para que las scanlines ocupen toda la altura */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--fondo);
+            color: var(--color-primario);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            animation: fadeIn 1s ease-in;
+        }
+
+        body::after {
+            content: ' ';
+            display: block;
+            position: fixed; /* Usamos fixed para que cubra el viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(255,255,255,0.05) 3px, rgba(255,255,255,0.05) 4px);
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Contenedor principal y sección */
+        section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 20px 60px;
+            box-sizing: border-box;
+        }
+
+        .content-container {
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px var(--color-secundario), 0 0 20px var(--color-secundario);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        p {
+            line-height: 1.8;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        strong {
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--color-secundario);
+        }
+
+        /* Botón de volver */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid var(--color-primario);
+            color: var(--color-primario);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-shadow: 0 0 8px var(--color-secundario);
+        }
+        .back-button:hover {
+            background-color: var(--color-secundario);
+            color: var(--fondo);
+            box-shadow: 0 0 15px var(--color-primario);
+        }
+
+        /* --- ESTILOS PARA EL CV COLAPSABLE --- */
+        .terminal-cv {
+            border: 1px solid var(--color-secundario);
+            background-color: var(--fondo-terminal);
+            margin-top: 50px;
+            text-align: left;
+        }
+
+        .terminal-header {
+            font-size: 1.2rem;
+            text-shadow: 0 0 8px var(--color-secundario);
+            padding: 15px 20px;
+            cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none; /* Evita que el texto se seleccione al hacer clic */
+        }
+        
+        .terminal-header .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .terminal-cv.expanded .terminal-header .arrow {
+            transform: rotate(90deg);
+        }
+
+        .terminal-content {
+            max-height: 0; /* Por defecto, el contenido está oculto */
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out; /* Animación suave */
+            padding: 0 20px;
+        }
+
+        .terminal-cv.expanded .terminal-content {
+            max-height: 1000px; /* Un valor alto para permitir que el contenido se expanda */
+            padding: 10px 20px 20px;
+        }
+
+        .terminal-content p {
+            margin: 5px 0 15px 0;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .terminal-content span {
+            opacity: 0.8;
+        }
+
+        /* Sección de Contacto */
+        .contact-section {
+            margin-top: 60px;
+            border-top: 1px solid var(--color-secundario);
+            padding-top: 30px;
+            text-align: center;
+        }
+        .contact-section p {
+            text-align: center;
+        }
+        .contact-section a {
+            color: var(--color-primario);
+            text-decoration: underline;
+            transition: all 0.3s;
+        }
+        .contact-section a:hover {
+            text-shadow: 0 0 15px var(--color-primario);
+        }
+
+    </style>
+</head>
+<body>
+    
+    <a href="index.html" class="back-button">[ volver al inicio ]</a>
+
+    <section>
+        <div class="content-container">
+            <h1>[ BIO/CV ]</h1>
+            <p>
+                Yan es artista medial e investigadora (Artes Visuales, Universidad de Concepción). Su práctica, denominada <strong>Tecnoternura</strong>, es un sabotaje afectivo que investiga las intersecciones entre tecnología, ética y cuidado a través de instalaciones interactivas y videocreación.
+            </p>
+            
+            <!-- CV COLAPSABLE -->
+            <div class="terminal-cv">
+                <div class="terminal-header">
+                    <span>// LEYENDO ARCHIVO: cv_yan.txt</span>
+                    <span class="arrow">[+]</span>
+                </div>
+                <div class="terminal-content">
+                    <p><strong>&lt;_ Formación académica _&gt;</strong></p>
+                    <p>
+Licenciatura en Artes Visuales
+<span>Universidad de Concepción, [2022 – En curso]</span>
+                    </p>
+                    <p>
+Escuela de Sensibilización Tecnológica
+<span>Colectivo Toda la Teoría del Universo TTU, [2024]</span>
+                    </p>
+
+                    <p><strong>&lt;_ Experiencia y colaboraciones _&gt;</strong></p>
+                    <p>
+Pasantías de montaje en Casa del Arte UdeC (Pinacoteca)
+<span>- Atenea: 100 años de difusión del conocimiento y de las artes [Oct 2024]</span>
+<span>- Herbario CONC: 100 años de custodia botánica [Jul 2024]</span>
+                    </p>
+
+                    <p><strong>&lt;_ Exposiciones y Presentaciones _&gt;</strong></p>
+                    <p>
+Exposición Colectiva "Tecnotodo, tecnonada _ duda al DM"
+<span>Galería Activa, Balmaceda Arte Joven Bío-Bío [Marzo 2025]</span>
+<span>Obra: &lt;_¿Qué Dejas de Ti?_&gt;</span>
+                    </p>
+                    <p>
+1er Congreso Internacional en Investigación de las Artes (CINIA)
+<span>Presentación de la videocreación existencia_artificial.mp4 [Enero 2025]</span>
+                    </p>
+                    <p>
+Muestra de pintura "Estética de la Naturaleza"
+<span>Obra colectiva [2024]</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE CONTACTO ACTUALIZADA -->
+            <div class="contact-section">
+                <p>// INICIAR CONTACTO //</p>
+                <p>
+                    Para colaboraciones, consultas o conversaciones:<br>
+                    <a href="mailto:yan@tecnoternura.com">yan@tecnoternura.com</a>
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // SCRIPT PARA EL CV COLAPSABLE
+        const terminalHeader = document.querySelector('.terminal-header');
+        const terminalCv = document.querySelector('.terminal-cv');
+        const arrow = document.querySelector('.terminal-header .arrow');
+
+        terminalHeader.addEventListener('click', () => {
+            terminalCv.classList.toggle('expanded');
+            if (terminalCv.classList.contains('expanded')) {
+                arrow.textContent = '[-]';
+            } else {
+                arrow.textContent = '[+]';
+            }
+        });
+    </script>
+</body>
+</html>

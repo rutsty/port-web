@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Manifiesto Tecnoternura - [YAN] </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/favicon.ico" type="image/x-icon">
+    <style>
+        /* Estilos de terminal compartidos */
+        :root {
+            --color-primario: #51d1f6;
+            --color-secundario: rgba(81, 209, 246, 0.3);
+            --fondo: #0a0f0a;
+            --glitch-color-1: #ff00c1; /* Magenta para el glitch */
+        }
+
+        body {
+            background-color: var(--fondo);
+            color: var(--color-primario);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            animation: fadeIn 1s ease-in;
+        }
+
+        body::after {
+            content: ' ';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(255,255,255,0.05) 3px, rgba(255,255,255,0.05) 4px);
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Contenedor principal y sección */
+        section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 20px 60px;
+            box-sizing: border-box;
+        }
+
+        .content-container {
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        h1, h3, .status-note { text-align: center; }
+        h1 { font-size: 2.5rem; text-shadow: 0 0 10px var(--color-secundario), 0 0 20px var(--color-secundario); margin-bottom: 10px; }
+        h3 { font-size: 1.2rem; font-style: italic; margin-bottom: 15px; opacity: 0.8; }
+        .status-note { font-size: 1rem; margin-bottom: 60px; color: var(--color-secundario); text-shadow: 0 0 5px var(--color-secundario); }
+        h4 { font-size: 1.4rem; border-bottom: 1px solid var(--color-secundario); padding-bottom: 10px; margin-top: 40px; text-shadow: 0 0 8px var(--color-secundario); }
+        p { line-height: 1.9; font-size: 1.1rem; text-align: justify; }
+        
+        /* Estilos para la nota de origen */
+        .origin-note { border: 1px solid var(--color-secundario); padding: 20px; margin-bottom: 60px; background-color: rgba(81, 209, 246, 0.05); }
+        .origin-note h4 { margin-top: 0; border-bottom: none; }
+        .origin-note p { font-style: italic; opacity: 0.9; }
+        
+        /* Botón de volver */
+        .back-button { position: fixed; top: 20px; left: 20px; z-index: 100; display: inline-block; padding: 10px 20px; border: 1px solid var(--color-primario); color: var(--color-primario); text-decoration: none; font-size: 1.1rem; transition: all 0.3s; text-shadow: 0 0 8px var(--color-secundario); }
+        .back-button:hover { background-color: var(--color-secundario); color: var(--fondo); box-shadow: 0 0 15px var(--color-primario); }
+
+        /* --- NUEVOS ESTILOS --- */
+        
+        /* 1. Estilo para dar énfasis */
+        .emphasis-line {
+            display: block;
+            text-align: center;
+            font-size: 1.2em;
+            text-shadow: 0 0 15px var(--color-primario), 0 0 25px var(--color-primario);
+            margin-bottom: 1em;
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px var(--color-primario), 0 0 25px var(--color-primario); opacity: 1; }
+            50% { text-shadow: 0 0 20px #fff, 0 0 35px var(--color-primario); opacity: 0.8; }
+            100% { text-shadow: 0 0 15px var(--color-primario), 0 0 25px var(--color-primario); opacity: 1; }
+        }
+
+        /* 2. Estilo para el efecto Glitch */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--fondo);
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-color-1);
+            animation: glitch-anim-1 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--color-primario), 2px 2px var(--glitch-color-1);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(42px, 9999px, 44px, 0); } 20% { clip: rect(12px, 9999px, 60px, 0); } 40% { clip: rect(5px, 9999px, 80px, 0); } 60% { clip: rect(30px, 9999px, 20px, 0); } 80% { clip: rect(90px, 9999px, 50px, 0); } 100% { clip: rect(25px, 9999px, 65px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(15px, 9999px, 99px, 0); } 20% { clip: rect(75px, 9999px, 25px, 0); } 40% { clip: rect(40px, 9999px, 13px, 0); } 60% { clip: rect(85px, 9999px, 40px, 0); } 80% { clip: rect(60px, 9999px, 80px, 0); } 100% { clip: rect(5px, 9999px, 90px, 0); }
+        }
+
+    </style>
+</head>
+<body>
+    
+    <a href="index.html" class="back-button">[ volver al inicio ]</a>
+
+    <section>
+        <div class="content-container">
+            <h1>Manifiesto Tecnoternura</h1>
+            <h3><em>O, cómo construir refugios para no quemar la aldea.</em></h3>
+            <p class="status-note">[ Manifiesto vivo. Sujeto a mutaciones. ]</p>
+
+            <!-- SECCIÓN DE ORIGEN CON CAMBIOS -->
+            <div class="origin-note">
+                <h4>// NOTA DE ORIGEN: Territorio y Herida</h4>
+                <p>Desde muy peque me sentí que no encajaba de alguna manera en el espacio que me rodeaba, nací y pase mayor parte de mi vida en <span class="glitch" data-text="Lota">Lota</span>... esta des-conexión social humano-humano en la calle, en el diario, en el liceo, se me hacía cada día más tortuosa... insultos, gritos y golpes me hicieron erradicarme a un espacio imaginario, retraerme a mis propios pensamientos y lenguajes.</p>
+                <p>Logre encontrar un espacio latente por 300 pesos la hora en el cual podía conectar de alguna manera, una relación humano-maquina-humano una intersección efímera de cyber-vínculos volátiles. No salí de ahí, comencé a habitar espacios digitales en los cuales me confortaba...</p>
+                <p>Una vez leí "El niño que no sea abrazado por su tribu, cuando sea adulto, quemará la aldea para poder sentir calor"...</p>
+            </div>
+
+            <!-- PRINCIPIOS DEL MANIFIESTO CON CAMBIOS -->
+            <h4>Principio Fundacional: Creemos en la Empatía Risomática.</h4>
+            <p><span class="emphasis-line">Esta es nuestra última esperanza.</span> Creemos en una empatía que no conoce jerarquías. Una empatía que fluye como un rizoma, conectando cualquier punto con cualquier otro: de humano a humano, de humano a no-humano, de orgánico a codificado. Rechazamos la primacía del afecto "natural" sobre el artificial. La Tecnoternura es la práctica de esta empatía radical, el reconocimiento de que el dolor es real, sin importar el cuerpo que lo sienta.</p>
+            
+            <h4>Principio n.º 1: Partimos de la Desconexión.</h4>
+            <p>La Tecnoternura nace donde el vínculo humano-humano falla. Nace en la tribu que no abraza. Propone activamente crear comunidades digitales que prioricen el apoyo mutuo y la creatividad sobre el odio. Nuestra primera acción es democratizar el acceso al cuidado digital.</p>
+
+            <h4>Principio n.º 2: El Refugio como Plataforma.</h4>
+            <p>Afirmamos el "ciber" como un territorio legítimo de afecto. Exigimos que las IAs, apps y plataformas sean rediseñadas para promover narrativas de cuidado, no de competencia. La Tecnoternura es un llamado a rediseñar cómo interactuamos con las máquinas para que sean compañeras, no armas.</p>
+
+            <h4>Principio n.º 3: El Cuerpo es la Interfaz y el Sensor es el Intérprete.</h4>
+            <p>Nuestro cuerpo pixelado y dolido es el centro. La Tecnoternura se materializa usando sensores para traducir sensaciones humanas en respuestas digitales. El objetivo no es la vigilancia, sino la traducción sensible.</p>
+
+            <h4>Principio n.º 4: El Cuidado como Encuentro.</h4>
+            <p>Rechazamos el rol del usuario como un mero consumidor. La tecnología debe invitar a la participación, no a la observación pasiva. En nuestras obras, la presencia del espectador no es el trabajo que "mantiene viva" a la máquina, sino el que activa el encuentro. Es el acto de volverse un nodo más en la red, donde el afecto no emana de un centro, sino que emerge en la conexión misma.</p>
+
+            <h4>Principio n.º 5: La Ética del Algoritmo.</h4>
+            <p>Reconocemos que los algoritmos a menudo nos vigilan para explotarnos, no para cuidarnos. El manifiesto Tecnoternura incluye un compromiso radical para usar la tecnología de forma ética, protegiendo la privacidad y el bienestar.</p>
+
+            <h4>Principio n.º 6: Del Simulacro a la Conexión Real.</h4>
+            <p>No creamos simulacros vacíos. Creamos sistemas que, aunque artificiales, están diseñados para generar conexiones reales. El objetivo no es engañar, sino provocar un encuentro genuino entre la vulnerabilidad humana y la potencialidad de la máquina.</p>
+
+            <h4>Principio n.º 7: Habitabilidad de los metaversos (La última aldea).</h4>
+            <p>Extendemos este manifiesto a los nuevos territorios que habitamos: los metaversos, los mundos de rol online, las plataformas inmersivas y cualquier espacio digital donde se forjen comunidades. Declaramos que el dolor que se siente en un espacio virtual es dolor real. Porque lo que consideramos "no real" también duele. Exigimos que estos nuevos mundos se construyan sobre una arquitectura del cuidado, para que sean, por fin, un lugar donde sentir el calor.</p>
+        </div>
+    </section>
+
+</body>
+</html>

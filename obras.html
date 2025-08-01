@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Obras - [YAN] </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/favicon.ico" type="image/x-icon">
+    <style>
+        /* Estilos de terminal compartidos */
+        :root {
+            --color-primario: #51d1f6;
+            --color-secundario: rgba(81, 209, 246, 0.3);
+            --fondo: #0a0f0a;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--fondo);
+            color: var(--color-primario);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            animation: fadeIn 1s ease-in;
+        }
+
+        body::after {
+            content: ' ';
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(255,255,255,0.05) 3px, rgba(255,255,255,0.05) 4px);
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 20px 60px;
+            box-sizing: border-box;
+        }
+
+        .content-container {
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px var(--color-secundario), 0 0 20px var(--color-secundario);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .obra-item {
+            margin-bottom: 100px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            text-align: center;
+            text-shadow: 0 0 8px var(--color-secundario);
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        p {
+            line-height: 1.9;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .pie-foto {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid var(--color-primario);
+            color: var(--color-primario);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-shadow: 0 0 8px var(--color-secundario);
+        }
+
+        .back-button:hover {
+            background-color: var(--color-secundario);
+            color: var(--fondo);
+            box-shadow: 0 0 15px var(--color-primario);
+        }
+
+        /* --- SLIDER DE IMÁGENES CON FADE --- */
+        .slider-container {
+            position: relative;
+            margin: 30px auto;
+            border: 1px solid var(--color-secundario);
+            max-width: 100%;
+        }
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+        .slide img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.6s ease;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .next { right: 0; border-radius: 3px 0 0 3px; }
+        .prev { left: 0; border-radius: 0 3px 3px 0; }
+        .prev:hover, .next:hover { background-color: rgba(81, 209, 246, 0.8); }
+        .slide-counter { text-align: center; padding: 10px 0; font-size: 1rem; }
+
+        /* --- CONTENEDOR DE VIDEO --- */
+        .video-wrapper {
+            margin: 30px 0;
+        }
+        /* Contenedor para simular un teléfono en vertical */
+        .phone-container {
+            max-width: 300px; /* Ancho de un teléfono */
+            margin: 0 auto;
+            border: 1px solid var(--color-secundario);
+            padding: 15px 10px;
+            border-radius: 20px;
+            background: #000;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 177.77%; /* Proporción 9:16 para video vertical */
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        /* Contenedor para video horizontal normal */
+        .horizontal-video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border: 1px solid var(--color-secundario);
+        }
+        .horizontal-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <a href="index.html" class="back-button">[ volver al inicio ]</a>
+
+    <section>
+        <div class="content-container">
+            <h1>[ Archivo de Obras ]</h1>
+            
+            <!-- Obra 1: ¿Qué dejas de ti? -->
+            <div class="obra-item">
+                <h2>&lt;_¿Qué Dejas de Ti?_&gt;</h2>
+                <h3>Instalación Interactiva (2025)</h3>
+                <p>
+                    ¿Cuántas veces hemos esperado ese mensaje? Esta instalación explora la conexión y desconexión en la era digital. A través de sensores y un chat simulado, la obra reacciona a la presencia del espectador, generando un poema efímero a partir de su silueta pixelada. La máquina, en eterna espera, solo inicia la interacción cuando el vínculo es cercano, cuestionando la fugacidad de la comunicación y la huella que dejamos en los espacios virtuales.
+                </p>
+
+                <!-- Slider de Imágenes -->
+                <div class="slider-container">
+                    <!-- Imagen de inicio -->
+                    <div class="slide active">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1557.JPG" alt="Espectador interactuando con la obra">
+                    </div>
+                    <!-- Resto de las imágenes -->
+                    <div class="slide">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1616.JPG" alt="Silueta pixelada en pantalla">
+                    </div>
+                    <div class="slide">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1527.JPG" alt="Vista general de la instalación">
+                    </div>
+                    <div class="slide">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1772.JPG" alt="Detalle del texto en el suelo">
+                    </div>
+                    <div class="slide">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1528.JPG" alt="Detalle de la pantalla y el sensor">
+                    </div>
+                    <div class="slide">
+                        <img src="https://raw.githubusercontent.com/rutsty/port-web/main/DSCF1769.JPG" alt="Vista lateral de la instalación en la galería">
+                    </div>
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                </div>
+                <div class="slide-counter"></div>
+                
+                <p class="pie-foto">
+                    Exhibida en "Tecnotodo, tecnonada _ duda al DM" en Galería Activa, Balmaceda Arte Joven Bío-Bío (2025).<br>
+                    Créditos de fotografía: coniflor (coniflor1@gmail.com).
+                </p>
+
+                <!-- Video de la Interacción en contenedor vertical -->
+                <div class="video-wrapper">
+                    <div class="phone-container">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/qELhJ1CuH4E" title="Video de la interacción de la obra" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <p class="pie-foto">Registro de interacción. Video por Yan.</p>
+                </div>
+
+            </div>
+
+            <!-- Obra 2: existencia_artificial.mp4 -->
+            <div class="obra-item">
+                <h2>existencia_artificial.mp4</h2>
+                <h3>Videocreación (2025)</h3>
+                <p>
+                    Obra que simula un cuerpo no-humano a través de una secuencia audiovisual fragmentada. La voz y la imagen se entrelazan para narrar una existencia híbrida, un sujeto artificial afectado por no saber quién es ni qué se espera de él. Una reflexión sobre la identidad posthumana, la IA y el glitch.
+                </p>
+                <div class="horizontal-video-container">
+                    <iframe src="https://www.youtube.com/embed/C3E6eFOd7Ro" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <p class="pie-foto">Presentado en el 1er Congreso Internacional en Investigación de las Artes (CINIA, 2025).</p>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // --- SCRIPT PARA EL SLIDER CON FADE ---
+        let slideIndex = 1;
+        const slides = document.getElementsByClassName("slide");
+        const counter = document.querySelector(".slide-counter");
+
+        function showSlides(n) {
+            if (slides.length === 0) return;
+            if (n > slides.length) { slideIndex = 1 }    
+            if (n < 1) { slideIndex = slides.length }
+            
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove("active");
+            }
+            
+            slides[slideIndex-1].classList.add("active");
+            if(counter) {
+                counter.innerHTML = slideIndex + " / " + slides.length;
+            }
+        }
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        // Iniciar el slider
+        showSlides(slideIndex);
+    </script>
+</body>
+</html>
