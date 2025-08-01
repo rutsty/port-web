@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Portafolio Artístico - [YAN]</title>
+    <title> En proceso... - [YAN]</title>
     <link rel="icon" href="https://raw.githubusercontent.com/rutsty/web_test/refs/heads/main/favicon.ico" type="image/x-icon">
     <style>
         :root {
@@ -20,7 +20,7 @@
             
         }
 
-        /* Cursor personalizado */
+       
         #custom-cursor {
             position: fixed;
             width: 20px;
@@ -59,7 +59,7 @@
             transform: translate(-50%, -50%) scale(1.3);
         }
 
-        /* Menú de navegación */
+       
         nav {
             position: fixed;
             top: 0;
@@ -95,7 +95,7 @@
             border-bottom: 2px solid var(--color-primario);
         }
 
-        /* Secciones */
+       
         section {
             min-height: 100vh;
             padding: 80px 20px 20px;
@@ -167,7 +167,7 @@
             text-align: center;
         }
 
-        /* Efecto de palabras flotantes */
+        
         .floating-word {
             position: absolute;
             font-size: 1.2rem;
@@ -181,7 +181,7 @@
         
         .video-container, .video-showcase {
           position: relative;
-          padding-bottom: 56.25%; /* proporción 16:9 */
+          padding-bottom: 56.25%; 
           height: 0;
           overflow: hidden;
           margin-top: 20px;
@@ -199,7 +199,7 @@
           border: 0;
         }
 
-        /* --- ESTILOS PARA EL SLIDER --- */
+       
         .slider-container {
             overflow-x: auto;
             scroll-snap-type: x mandatory;
@@ -251,7 +251,7 @@
             scrollbar-width: thin;
         }
         
-        /* --- ESTILO PARA INFO FORMAL --- */
+        
         .info-formal {
             position: absolute;
             bottom: 20px;
@@ -265,12 +265,12 @@
             padding: 0 20px;
         }
 
-        /* --- ESTILOS PARA GIF DE INICIO --- */
+        
         .hero-gif-container {
             width: 100%;
             max-width: 800px;
             margin: 30px 0;
-            position: relative; /* Para asegurar el z-index */
+            position: relative; 
             z-index: 10;
         }
 
@@ -281,7 +281,7 @@
             box-shadow: 0 8px 25px rgba(81, 209, 246, 0.4);
         }
 
-        /* Estilo para el texto de introducción */
+        
         .intro-text {
             max-width: 800px;
             margin: 20px auto;
@@ -290,11 +290,11 @@
         }
         .intro-text .question {
             font-weight: bold;
-            display: block; /* Asegura que esté en su propia línea */
-            margin-bottom: 1em; /* Espacio después de la pregunta */
+            display: block; 
+            margin-bottom: 1em; 
         }
 
-        /* --- ESTILOS PARA OBRA SERIADA INTERACTIVA --- */
+       
         .obra-seriada-container {
             display: flex;
             justify-content: center;
@@ -319,12 +319,12 @@
             overflow: hidden;
             background: #f0faff;
             box-shadow: 0 10px 20px rgba(81, 209, 246, 0.2);
-            aspect-ratio: 16 / 9; /* Asegura que todos los monitores tengan el mismo tamaño */
+            aspect-ratio: 16 / 9; 
         }
         .monitor-screen img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Hace que la imagen cubra el espacio sin deformarse */
+            object-fit: cover; 
             display: block;
         }
         .monitor-overlay {
@@ -351,11 +351,11 @@
         .monitor-title {
             margin-top: 15px;
             font-weight: bold;
-            min-height: 3em; /* Espacio para que los títulos no muevan el layout */
+            min-height: 3em; 
         }
 
 
-        /* Responsive */
+      
         @media (max-width: 768px) {
             nav ul {
                 flex-direction: column;
@@ -375,15 +375,15 @@
 </head>
 <body>
 
-    <!-- Cursor personalizado -->
+    
     <div id="custom-cursor"></div>
     
-    <!-- Onda sonora interactiva -->
+  
     <canvas id="osciloscopio"></canvas>
 
     <a href="index.html" class="home-button">[ volver al inicio ]</a>
 
-    <!-- Menú de navegación -->
+    
     <nav>
         <ul>
             <li><a href="#inicio" class="active">Inicio</a></li>
@@ -394,7 +394,7 @@
         </ul>
     </nav>
 
-    <!-- Sección Inicio -->
+    
     <section id="inicio">
       <h1>Tres maneras en las que te cuidé<br><i>(aunque no sepas)</i></h1>
     
@@ -406,7 +406,7 @@
         <div class="palabra">Memoria</div>
       </div>
 
-      <!-- INICIO CON GIF -->
+      
       <div class="hero-gif-container">
         <img src="https://i.postimg.cc/KYY7jC08/portadas.gif" alt="Animación de las tres pantallas de la obra">
       </div>
@@ -418,13 +418,13 @@
         </p>
       </div>
     
-      <!-- INFORMACIÓN FORMAL -->
+     
       <div class="info-formal">
         <p>Proyecto desarrollado por Yan para el Taller de Producción Visual 1, guiado por el docente Paulo Arias, Departamento de Artes Plásticas UdeC</p>
       </div>
     </section>
 
-    <!-- Sección Antecedentes -->
+  
     <section id="antecedentes">
         <h2>Antecedentes</h2>
         
@@ -451,7 +451,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
         </div>
     </section>
 
-    <!-- Sección Exploración Visual -->
+    
     <section id="exploracion">
       <h2>Exploración Visual</h2>
     
@@ -553,7 +553,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
       </div>
     </section>
     
-    <!-- Sección Confección -->
+   
     <section id="confeccion">
       <h2>Confección</h2>
     
@@ -663,7 +663,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
       </div>
     </section>
     
-    <!-- Sección Obra Final -->
+    
     <section id="obra">
         <h2>Obra</h2>
         
@@ -729,17 +729,17 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
     </section>
 
     <script>
-        // Configuración del canvas y onda sonora
+        
         const canvas = document.getElementById('osciloscopio');
         const ctx = canvas.getContext('2d');
         let width, height;
         let animationId;
 
-        // Palabras flotantes interactivas
+       
         const keywords = ["Interfaz", "Afecto", "Tecnoternura", "Ausencia", "Arrullo"];
         let floatingWords = [];
 
-        // Inicializar
+       
         function init() {
             resizeCanvas();
             setupCursor();
@@ -754,7 +754,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
             height = canvas.height = window.innerHeight;
         }
 
-        // Configuración del cursor personalizado
+        
         function setupCursor() {
             const cursor = document.getElementById('custom-cursor');
             
@@ -769,7 +769,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
             });
         }
 
-        // Onda simulada
+       
         function simulateWave() {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.fillRect(0, 0, width, height);
@@ -793,7 +793,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
             animationId = requestAnimationFrame(simulateWave);
         }
 
-        // Navegación suave y activa con scroll
+        
         function setupNavigation() {
             const navLinks = document.querySelectorAll('nav a');
             const sections = document.querySelectorAll('section');
@@ -826,7 +826,7 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
             });
         }
 
-        // Crear palabras flotantes
+        
         function createFloatingWords() {
             for (let i = 0; i < 15; i++) {
                 addFloatingWord();
@@ -883,3 +883,4 @@ Esta transición entre objetos sensibles no niega el pasado, sino que lo expande
     </script>
 </body>
 </html>
+
