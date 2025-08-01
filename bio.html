@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/favicon.ico" type="image/x-icon">
     <style>
-        /* Estilos de terminal compartidos */
+      
         :root {
             --color-primario: #51d1f6;
             --color-secundario: rgba(81, 209, 246, 0.3);
@@ -14,7 +14,7 @@
             --fondo-terminal: rgba(81, 209, 246, 0.05);
         }
 
-        /* Arreglo para que las scanlines ocupen toda la altura */
+
         html, body {
             height: 100%;
             margin: 0;
@@ -32,7 +32,7 @@
         body::after {
             content: ' ';
             display: block;
-            position: fixed; /* Usamos fixed para que cubra el viewport */
+            position: fixed; 
             top: 0;
             left: 0;
             width: 100%;
@@ -48,7 +48,6 @@
             to { opacity: 1; }
         }
 
-        /* Contenedor principal y sección */
         section {
             min-height: 100vh;
             display: flex;
@@ -82,7 +81,7 @@
             text-shadow: 0 0 5px var(--color-secundario);
         }
 
-        /* Botón de volver */
+  
         .back-button {
             position: fixed;
             top: 20px;
@@ -103,7 +102,7 @@
             box-shadow: 0 0 15px var(--color-primario);
         }
 
-        /* --- ESTILOS PARA EL CV COLAPSABLE --- */
+        
         .terminal-cv {
             border: 1px solid var(--color-secundario);
             background-color: var(--fondo-terminal);
@@ -115,11 +114,11 @@
             font-size: 1.2rem;
             text-shadow: 0 0 8px var(--color-secundario);
             padding: 15px 20px;
-            cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+            cursor: pointer; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none; /* Evita que el texto se seleccione al hacer clic */
+            user-select: none; 
         }
         
         .terminal-header .arrow {
@@ -131,14 +130,14 @@
         }
 
         .terminal-content {
-            max-height: 0; /* Por defecto, el contenido está oculto */
+            max-height: 0; 
             overflow: hidden;
-            transition: max-height 0.5s ease-out, padding 0.5s ease-out; /* Animación suave */
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out; 
             padding: 0 20px;
         }
 
         .terminal-cv.expanded .terminal-content {
-            max-height: 1000px; /* Un valor alto para permitir que el contenido se expanda */
+            max-height: 1000px; 
             padding: 10px 20px 20px;
         }
 
@@ -153,7 +152,7 @@
             opacity: 0.8;
         }
 
-        /* Sección de Contacto */
+ 
         .contact-section {
             margin-top: 60px;
             border-top: 1px solid var(--color-secundario);
@@ -226,7 +225,7 @@ Muestra de pintura "Estética de la Naturaleza"
                 </div>
             </div>
 
-            <!-- SECCIÓN DE CONTACTO ACTUALIZADA -->
+         
             <div class="contact-section">
                 <p>// INICIAR CONTACTO //</p>
                 <p>
@@ -238,7 +237,7 @@ Muestra de pintura "Estética de la Naturaleza"
     </section>
     
     <script>
-        // SCRIPT PARA EL CV COLAPSABLE
+        
         const terminalHeader = document.querySelector('.terminal-header');
         const terminalCv = document.querySelector('.terminal-cv');
         const arrow = document.querySelector('.terminal-header .arrow');
@@ -254,3 +253,4 @@ Muestra de pintura "Estética de la Naturaleza"
     </script>
 </body>
 </html>
+
