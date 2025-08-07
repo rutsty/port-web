@@ -120,7 +120,7 @@
     </div>
 
     <script>
-        // --- 1. Configuración del Mapa Real (Leaflet.js) ---
+     
         const mapElement = document.getElementById('map');
         const defaultCoords = [-36.827, -73.050]; // Concepción
         const map = L.map('map', {
@@ -134,17 +134,17 @@
             maxZoom: 19,
         }).addTo(map);
 
-        // --- 2. Configuración del Canvas de Animación ---
+
         const canvas = document.getElementById('animationCanvas');
         const ctx = canvas.getContext('2d');
 
         const neonPink = '#ff00ff';
         const darkPink = '#8B008B';
-        const visitorColor = '#00ffff'; // Color para el visitante
+        const visitorColor = '#00ffff'; 
 
         const heartCoordinates = [
-            [-36.820, -73.045], [-36.835, -73.060], [-36.828, -73.038], // Concepción
-            [-33.448, -70.669], [-33.458, -70.649], // Santiago
+            [-36.820, -73.045], [-36.835, -73.060], [-36.828, -73.038], 
+            [-33.448, -70.669], [-33.458, -70.649], 
             [40.712, -74.006], [35.689, 139.691], [48.856, 2.352]
         ];
 
@@ -201,7 +201,7 @@
                 points.push(visitorPoint);
             }
             
-            // Conectar cada punto a otros 2 puntos aleatorios
+        
             points.forEach(p1 => {
                 const otherPoints = points.filter(p => p.id !== p1.id);
                 const shuffled = otherPoints.sort(() => 0.5 - Math.random());
@@ -238,18 +238,18 @@
             requestAnimationFrame(animate);
         }
 
-        // --- 3. Lógica de Geolocalización y Secuencia ---
+
         const introOverlay = document.getElementById('intro-overlay');
         const statusBar = document.querySelector('.status-bar');
 
         function startExperience(coords) {
-            // Centrar mapa y establecer zoom
+           
             map.setView(coords, 13, { animate: true, pan: { duration: 2 } });
             
-            // Configurar el canvas con la ubicación del visitante
+       
             setupCanvas({ lat: coords[0], lng: coords[1] });
             
-            // Iniciar la secuencia de aparición
+       
             setTimeout(() => {
                 introOverlay.classList.add('hidden');
                 mapElement.style.opacity = 1;
@@ -268,17 +268,17 @@
                         startExperience(userCoords);
                     },
                     () => {
-                        // Si el usuario niega el permiso, empezar en Concepción
+                   
                         startExperience(defaultCoords);
                     }
                 );
             } else {
-                // Si el navegador no soporta geolocalización
+                
                 startExperience(defaultCoords);
             }
         };
 
-        // --- 4. Barra de estado y otros ---
+     
         const redraw = () => {
             if(startAnimation) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -302,10 +302,11 @@
             userCountElement.textContent = baseUserCount;
         }
         
-        animate(); // Inicia el bucle de animación
+        animate(); 
         setInterval(updateClock, 1000);
         setInterval(updateUserCount, 3500);
         updateClock();
     </script>
 </body>
 </html>
+
