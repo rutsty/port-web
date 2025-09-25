@@ -25,7 +25,7 @@
     let fraseActual = "";
     let tiempoUltimaFrase = 0;
 
-    // FRASES CON LENGUAJE NEUTRO (x/e)
+    
     const frasesFase1 = [
         "¿Aló, puedes??", "Avísame si quieres hablar", "No olvides escribirme",
         "Te estaré esperando", "Parece que te olvidaste", "No estás en línea",
@@ -205,11 +205,11 @@
         
        
         if (faseActual === 1) {
-            fill(255); // Blanco - fase neutral
+            fill(255); 
         } else if (faseActual === 2) {
-            fill(255, 200, 200); // Blanco cálido - fase emocional
+            fill(255, 200, 200); 
         } else {
-            fill(255, 150, 150); // Blanco rojizo - fase de deterioro
+            fill(255, 150, 150); 
         }
         
         textSize(24);
