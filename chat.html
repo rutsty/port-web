@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title><_esperando_online_></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: black; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script>
+    let video;
+    let estado = "esperando";
+    let tiempoInicioConexion = 0;
+    let tiempoUltimaPresencia = 0;
+    
+    const tamanoPixel = 12; 
+    const umbralBrillo = 50; 
+    const tiempoMaximoInteraccion = 180 * 1000;
+    const tiempoInicioTemblor = 170 * 1000;
+    const tiempoParaReiniciar = 5 * 1000;
+    
+    let fraseActual = "";
+    let tiempoUltimaFrase = 0;
+
+    // FRASES CON LENGUAJE NEUTRO (x/e)
+    const frasesFase1 = [
+        "¿Aló, puedes??", "Avísame si quieres hablar", "No olvides escribirme",
+        "Te estaré esperando", "Parece que te olvidaste", "No estás en línea",
+        "Volvió a sonar ocupado", "Quizás con la mente", "Nunca supe si leíste",
+        "Me dejaste en visto otra vez", "Lo pensé mil veces antes de escribir"
+    ];
+
+    const frasesFase2 = [
+        "Quise responder pero no pude", "¿En qué momento nos perdimos?",
+        "Siempre es tarde cuando vuelves", "El mensaje se quedó en borradores",
+        "Te escribí sin saber si importaba", "No quise ser insistente",
+        "Pero aquí estoy", "Tus palabras son un eco sin respuesta",
+        "Espero el mensaje que nunca llega", "Me acostumbré a tu silencio",
+        "No supe qué decirte", "Te hablé en mi cabeza", "¿Por qué todo suena a despedida?",
+        "Me quedé esperando", "Una respuesta que no llegó", "Duele hablarte y que no estés",
+        "Te busqué pero ya te habías ido", "Siempre soy yo quien insiste"
+    ];
+
+    const frasesFase3 = [
+        "Leí tu mensaje mil veces", "No sé si sigues ahí", "A veces dudo si existimos",
+        "Nunca sé qué esperas de mí", "Quería explicarte", "Pero no quisiste escuchar",
+        "Nos alejamos sin darnos cuenta", "Tal vez nunca estuve en tu historia",
+        "Te escribí pero borré todo", "Me imaginé una respuesta que nunca llegó",
+        "Tu silencio me dice todo", "Quise hablar pero ya no tenía sentido",
+        "Me esfuerzo en entenderte pero no puedo", "Dijiste que me entendías",
+        "Pero no lo siento así", "¿O sí es idea mía?", "A veces pareces otra persona",
+        "Me respondes pero no me hablas", "Si realmente te importara", "No harías esto",
+        "Supongo que nunca significó tanto para ti", "No sé cómo sigues adelante como si nada",
+        "Yo jamás te hubiera hecho esto", "Si me quisieras estarías aquí",
+        "No pedía mucho solo que te quedaras", "Tal vez solo fui un pasatiempo para ti",
+        "Duele ver lo rápido que me olvidaste", "Siempre tengo que ser yo quien entienda",
+        "Quizás solo fui un error en tu vida", "¿Alguna vez fui importante para ti?",
+        "No entiendo cómo puedes seguir sin mí", "Yo sigo aquí pero tú ya te fuiste",
+        "Si de verdad me hubieras querido", "No estaríamos así", "Ojalá algún día sientas",
+        "Lo que estoy sintiendo", "Nunca fuiste tan fuerte", "Cuando me necesitabas",
+        "No te culpo", "Siempre fui fácil de olvidar", "Te di todo", "Al final no sirvió de nada",
+        "Supongo que soy la única que sigue", "No me digas que te importa",
+        "Las acciones dicen otra cosa", "Te esperé pero nunca volviste",
+        "Si realmente sintieras lo mismo", "Estaríamos juntxs",
+        "Siempre fui quien tuvo que ceder", "Qué fácil es para ti soltarme",
+        "Ojalá pudiera ser tan indiferente", "Como tú", "Por favor no te vayas",
+        "Dime qué hacer para que te quedes", "No sé cómo existir sin ti",
+        "No quiero que esto termine", "Dime que aún hay tiempo", "Dime que aún me quieres",
+        "Aunque sea mentira", "Si te vas qué me queda", "No quiero seguir discutiendo",
+        "No puedo darte lo que estás buscando", "No voy a justificarme otra vez",
+        "Tienes derecho a sentir lo que sientes", "Pero no puedo hacer nada más",
+        "No voy a seguir esta conversación", "Si piensas eso de mí",
+        "No hay nada que pueda hacer para cambiarlo", "No puedo cargar con tus emociones",
+        "No tengo nada más que decir", "No voy a entrar en este juego otra vez",
+        "No veo sentido en seguir hablando de esto", "No estoy aquí para cumplir con tus expectativas",
+        "No quiero seguir en esta dinámica", "Me parece injusto lo que estás diciendo",
+        "Pero no voy a discutir", "Ya dije todo lo que tenía que decir",
+        "No quiero seguir repitiendo lo mismo", "No voy a quedarme en una conversación",
+        "Que solo me desgasta", "Si eso es lo que piensas", "Entonces no hay mucho más que hablar",
+        "Esto no me hace bien", "Prefiero tomar distancia", "No voy a responder a esto",
+        "Voy a seguir con mi día", "Hablamos después si quieres", "Ya no siento lo mismo",
+        "¿Aún me amas?", "¿Me odias?", "Esto no lo merezco"
+    ];
+
+    let frasesUsadas = [];
+    let faseActual = 1;
+
+    function setup() {
+        createCanvas(windowWidth, windowHeight);
+        video = createCapture(VIDEO);
+        video.size(80, 60);
+        video.hide();
+        frameRate(10);
+        textFont('Courier New');
+        textAlign(CENTER, CENTER);
+        cursor('none');
+    }
+
+    function draw() {
+        const hayPresencia = detectarPresencia();
+        const tiempoActual = millis();
+        
+        if (estado === "esperando" && hayPresencia) {
+            estado = "conectado";
+            tiempoInicioConexion = tiempoActual;
+            tiempoUltimaPresencia = tiempoActual;
+            faseActual = 1;
+            seleccionarNuevaFrase();
+        } else if (estado === "conectado" || estado === "fallando") {
+            if (hayPresencia) tiempoUltimaPresencia = tiempoActual;
+            
+            const tiempoTranscurrido = tiempoActual - tiempoInicioConexion;
+            
+            if (tiempoTranscurrido > 120000) {
+                faseActual = 3;
+            } else if (tiempoTranscurrido > 60000) {
+                faseActual = 2;
+            } else {
+                faseActual = 1;
+            }
+            
+            if (tiempoTranscurrido > tiempoMaximoInteraccion) {
+                estado = "desvaneciendo";
+                setTimeout(() => location.reload(), 3000); 
+            } else if (tiempoActual - tiempoUltimaPresencia > tiempoParaReiniciar) {
+                reiniciarSuave();
+            } else if (tiempoTranscurrido > tiempoInicioTemblor) {
+                estado = "fallando";
+            }
+        }
+        
+        background(0);
+
+        if (estado === "desvaneciendo") {
+            return;
+        }
+
+        const tiempoTranscurrido = tiempoActual - tiempoInicioConexion;
+        
+        if (estado === "fallando") {
+            let intensidadTemblor = map(tiempoTranscurrido, tiempoInicioTemblor, tiempoMaximoInteraccion, 5, 20);
+            translate(random(-intensidadTemblor, intensidadTemblor), random(-intensidadTemblor/2, intensidadTemblor/2));
+        }
+
+        if (estado === "esperando") {
+            dibujarPantallaEspera();
+        } else {
+            dibujarSiluetaNegativa();
+            dibujarTexto();
+            dibujarInfoProgreso(tiempoTranscurrido);
+        }
+
+        if (estado === "fallando" && tiempoTranscurrido > tiempoMaximoInteraccion - 3000) {
+            let opacidad = map(tiempoTranscurrido, tiempoMaximoInteraccion - 3000, tiempoMaximoInteraccion, 0, 255);
+            background(0, opacidad);
+        }
+    }
+
+    function detectarPresencia() {
+        video.loadPixels();
+        if (video.pixels.length === 0) return false;
+        let brilloTotal = 0;
+        for (let i = 0; i < video.pixels.length; i += 4) {
+            brilloTotal += (video.pixels[i] + video.pixels[i + 1] + video.pixels[i + 2]) / 3;
+        }
+        return (brilloTotal / (video.width * video.height)) > 15;
+    }
+
+    function dibujarPantallaEspera() {
+        
+        fill(255);
+        textSize(36);
+        text("<_esperando_online_>", width / 2, height / 2);
+    }
+
+    function dibujarSiluetaNegativa() {
+        video.loadPixels();
+        if (video.pixels.length === 0) return;
+        
+        let escala = 8;
+        let siluetaAncho = video.width * escala;
+        let siluetaAlto = video.height * escala;
+        let posX = (width - siluetaAncho) / 2;
+        let posY = height * 0.2;
+
+        for (let y = 0; y < video.height; y++) {
+            for (let x = 0; x < video.width; x++) {
+                const index = (x + y * video.width) * 4;
+                const brillo = (video.pixels[index] + video.pixels[index + 1] + video.pixels[index + 2]) / 3;
+                
+                if (brillo < umbralBrillo) {
+                    fill(255);
+                    noStroke();
+                    rect(posX + x * escala, posY + y * escala, escala, escala);
+                }
+            }
+        }
+    }
+
+    function dibujarTexto() {
+        if (millis() - tiempoUltimaFrase > 4000) seleccionarNuevaFrase();
+        
+       
+        if (faseActual === 1) {
+            fill(255); // Blanco - fase neutral
+        } else if (faseActual === 2) {
+            fill(255, 200, 200); // Blanco cálido - fase emocional
+        } else {
+            fill(255, 150, 150); // Blanco rojizo - fase de deterioro
+        }
+        
+        textSize(24);
+        textAlign(CENTER);
+        textWrap(WORD);
+        
+        text(fraseActual, width * 0.1, height * 0.75, width * 0.8);
+    }
+
+    function dibujarInfoProgreso(tiempoTranscurrido) {
+        fill(255, 150);
+        textSize(12);
+        textAlign(LEFT);
+        
+        let textoFase = "";
+        if (faseActual === 1) textoFase = "fase 1: expectativa";
+        else if (faseActual === 2) textoFase = "fase 2: vulnerabilidad"; 
+        else textoFase = "fase 3: deterioro";
+        
+        text(textoFase, 20, 30);
+        text("tiempo: " + int(tiempoTranscurrido) + "ms", 20, 45); 
+        text("estado: " + estado, 20, 60);
+        
+        
+    }
+    
+    function seleccionarNuevaFrase() {
+        let frasesDisponibles = [];
+        
+        if (faseActual === 1) {
+            frasesDisponibles = frasesFase1.filter(frase => !frasesUsadas.includes(frase));
+        } else if (faseActual === 2) {
+            frasesDisponibles = frasesFase2.filter(frase => !frasesUsadas.includes(frase));
+        } else {
+            frasesDisponibles = frasesFase3.filter(frase => !frasesUsadas.includes(frase));
+        }
+        
+        if (frasesDisponibles.length === 0) {
+            frasesUsadas = [];
+            if (faseActual === 1) frasesDisponibles = frasesFase1;
+            else if (faseActual === 2) frasesDisponibles = frasesFase2;
+            else frasesDisponibles = frasesFase3;
+        }
+        
+        if (frasesDisponibles.length > 0) {
+            fraseActual = random(frasesDisponibles);
+            frasesUsadas.push(fraseActual);
+            tiempoUltimaFrase = millis();
+        }
+    }
+    
+    function reiniciarSuave() {
+        estado = "esperando";
+        fraseActual = "";
+        frasesUsadas = [];
+        faseActual = 1;
+    }
+    
+    function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+    }
+</script>
+</body>
+</html>
