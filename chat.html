@@ -201,26 +201,25 @@
     }
 
     function dibujarTexto() {
-        if (millis() - tiempoUltimaFrase > 4000) seleccionarNuevaFrase();
-        
-       
-        if (faseActual === 1) {
-            fill(255); // Blanco - fase neutral
-        } else if (faseActual === 2) {
-            fill(255, 200, 200); // Blanco cálido - fase emocional
-        } else {
-            fill(255, 150, 150); // Blanco rojizo - fase de deterioro
-        }
-        
-        textSize(24);
-        textAlign(CENTER);
-        textWrap(WORD);
-       
-        let textoY = height * 0.2 + (60 * 8) + 80; 
-        if (textoY > height - 100) textoY = height - 100; 
-        
-        text(fraseActual, width * 0.1, height * 0.75, width * 0.8);
+    if (millis() - tiempoUltimaFrase > 4000) seleccionarNuevaFrase();
+    
+    if (faseActual === 1) {
+        fill(255);
+    } else if (faseActual === 2) {
+        fill(255, 200, 200);
+    } else {
+        fill(255, 150, 150);
     }
+    
+    
+    let textoY = height - 100; 
+    
+    textSize(20); 
+    textAlign(CENTER);
+    textWrap(WORD);
+    
+    text(fraseActual, width * 0.1, textoY, width * 0.8);
+}
 
     function dibujarInfoProgreso(tiempoTranscurrido) {
         fill(255, 150);
