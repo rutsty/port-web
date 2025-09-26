@@ -25,7 +25,7 @@
     let fraseActual = "";
     let tiempoUltimaFrase = 0;
 
-    
+    // FRASES CON LENGUAJE NEUTRO (x/e)
     const frasesFase1 = [
         "¿Aló, puedes??", "Avísame si quieres hablar", "No olvides escribirme",
         "Te estaré esperando", "Parece que te olvidaste", "No estás en línea",
@@ -201,33 +201,43 @@
     }
 
     function dibujarTexto() {
-    if (millis() - tiempoUltimaFrase > 4000) seleccionarNuevaFrase();
-    
-   
-    if (faseActual === 1) {
-        fill(255); 
-    } else if (faseActual === 2) {
-        fill(255, 200, 200); 
-    } else {
-        fill(255, 150, 150); 
+        if (millis() - tiempoUltimaFrase > 4000) seleccionarNuevaFrase();
+        
+       
+        if (faseActual === 1) {
+            fill(255); // Blanco - fase neutral
+        } else if (faseActual === 2) {
+            fill(255, 200, 200); // Blanco cálido - fase emocional
+        } else {
+            fill(255, 150, 150); // Blanco rojizo - fase de deterioro
+        }
+        
+        textSize(24);
+        textAlign(CENTER);
+        textWrap(WORD);
+       
+        let textoY = height * 0.2 + (60 * 8) + 80; 
+        if (textoY > height - 100) textoY = height - 100; 
+        
+        text(fraseActual, width * 0.1, height * 0.75, width * 0.8);
     }
-    
-    textSize(24);
-    textAlign(CENTER);
-    textWrap(WORD);
-    
-   
-    let siluetaBottom = height * 0.2 + (60 * 8); 
-    let textoY = siluetaBottom + 60; 
-    
-   
-    let maxTextY = height - 100;
-    if (textoY > maxTextY) {
-        textoY = maxTextY;
+
+    function dibujarInfoProgreso(tiempoTranscurrido) {
+        fill(255, 150);
+        textSize(12);
+        textAlign(LEFT);
+        
+        let textoFase = "";
+        if (faseActual === 1) textoFase = "fase 1: expectativa";
+        else if (faseActual === 2) textoFase = "fase 2: vulnerabilidad"; 
+        else textoFase = "fase 3: deterioro";
+        
+        text(textoFase, 20, 30);
+        text("tiempo: " + int(tiempoTranscurrido) + "ms", 20, 45); 
+        text("estado: " + estado, 20, 60);
+        
+        
     }
-    
-    text(fraseActual, width * 0.1, textoY, width * 0.8); // Usar textoY en lugar de height * 0.75
-}
     
     function seleccionarNuevaFrase() {
         let frasesDisponibles = [];
