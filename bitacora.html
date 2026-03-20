@@ -168,33 +168,65 @@
 
         const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
 
-        async function loadBitacora() {
-            try {
-                const response = await fetch(repoURL);
-                const data = await response.json();
-                const feed = document.getElementById('feed');
-                feed.innerHTML = ''; 
+     async function loadBitacora() {
+  
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
+    
+    try {
+        const response = await fetch(finalURL);
+        if (!response.ok) throw new Error('No se pudo cargar el archivo');
 
-                data.forEach(item => {
-                    const entry = document.createElement('article');
-                    entry.className = 'entry';
-                    entry.setAttribute('data-category', item.canal.toLowerCase());
-                    
-                    const imgHtml = item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="Evidencia">` : '';
-                    const fecha = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+        const rawText = await response.text();
+        const cleanText = rawText.trim(); 
 
-                    entry.innerHTML = `
-                        <div class="content">${item.mensaje}</div>
-                        ${imgHtml}
-                        <span class="date">${fecha} | CH_${item.canal.toUpperCase()}</span>
-                    `;
-                    feed.appendChild(entry);
-                });
-            } catch (error) {
-                console.log('Error conectando a la Lattice...', error);
-                document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Error al recuperar la memoria...</p>';
-            }
+        if (!cleanText || cleanText === "[]") {
+            document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">La Lattice está en silencio...</p>';
+            return;
         }
+
+        const jsonResponse = JSON.parse(cleanText);
+
+     
+        const data = jsonResponse.array ? jsonResponse.array : jsonResponse;
+
+        if (!Array.isArray(data)) {
+            console.error("Los datos no son una lista válida:", data);
+            return;
+        }
+
+        const feed = document.getElementById('feed');
+        feed.innerHTML = ''; 
+
+        data.forEach(item => {
+            const entry = document.createElement('article');
+            entry.className = 'entry';
+            
+          
+            const categoria = item.canal ? item.canal.toLowerCase() : 'otros';
+            entry.setAttribute('data-category', categoria);
+            
+            const imgHtml = item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="Evidencia">` : '';
+            
+            let fechaDisplay = '---';
+            if (item.fecha_y_hora) {
+                fechaDisplay = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', { 
+                    day:'2-digit', month:'short', year:'numeric' 
+                }).toUpperCase();
+            }
+
+            entry.innerHTML = `
+                <div class="content">${item.mensaje || 'Sin mensaje'}</div>
+                ${imgHtml}
+                <span class="date">${fechaDisplay} | CH_${(item.canal || 'S/N').toUpperCase()}</span>
+            `;
+            feed.appendChild(entry);
+        });
+
+    } catch (error) {
+        console.error('Error detallado:', error);
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Sintonizando señales... (Revisa la consola F12)</p>';
+    }
+}}
         loadBitacora();
 
         function filter(cat) {
