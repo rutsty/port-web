@@ -176,111 +176,61 @@ body.dark-mode .menu-content button {
         }
 
     
-    const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
-
-async function loadBitacora() {
-    const finalURL = repoURL + '?t=' + Date.now(); // evita cache
+   async function loadBitacora() {
+    // Truco del tiempo para que GitHub siempre nos dé lo más nuevo
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
-        if (!response.ok) throw new Error('No se pudo cargar el JSON');
+        if (!response.ok) throw new Error('Archivo no encontrado');
 
         const rawText = await response.text();
-        let cleanText = rawText.trim();
+        const jsonResponse = JSON.parse(rawText.trim());
+        
+        // Buscamos la lista dentro de la caja "array" que configuraste en Make
+        const data = jsonResponse.array ? jsonResponse.array : jsonResponse;
 
-        // 🔧 limpiar basura rara si aparece (tu caso __IMTAGGLENGTH__)
-        if (cleanText.includes('__IMTAGGLENGTH__')) {
-            cleanText = cleanText.split(',"__IMTAGGLENGTH__"')[0] + '}';
-        }
-
-        let jsonResponse = JSON.parse(cleanText);
-
-        // 💥 SOLUCIÓN CLAVE: doble parse
-        let data = [];
-
-        if (jsonResponse.array && typeof jsonResponse.array === "string") {
-            const parsed = JSON.parse(jsonResponse.array);
-            data = parsed.array || [];
-        } else if (jsonResponse.array && Array.isArray(jsonResponse.array)) {
-            data = jsonResponse.array;
-        } else if (Array.isArray(jsonResponse)) {
-            data = jsonResponse;
-        } else {
-            console.warn("Formato inesperado:", jsonResponse);
-        }
-
-        console.log("DATA FINAL:", data); // debug
-
-        if (!data || data.length === 0) {
-            document.getElementById('feed').innerHTML =
-                '<p style="text-align:center;opacity:0.5;">La Lattice está en silencio...</p>';
-            return;
-        }
+        if (!Array.isArray(data)) return;
 
         const feed = document.getElementById('feed');
-        feed.innerHTML = '';
+        feed.innerHTML = ''; 
 
         data.forEach(item => {
-
-            // ❌ ignorar registros completamente vacíos
-            if (!item || (!item.mensaje && !item.archivo)) return;
+            // Si el registro está totalmente vacío, lo saltamos
+            if (!item.mensaje && !item.url_foto) return;
 
             const entry = document.createElement('article');
             entry.className = 'entry';
-
+            
+            // Asignamos la categoría para que funcionen tus filtros del menú
             const categoria = item.canal ? item.canal.toLowerCase() : 'otros';
             entry.setAttribute('data-category', categoria);
-
-            // 🖼️ imagen segura
-            let imgHtml = '';
-            if (item.archivo && Array.isArray(item.archivo) && item.archivo.length > 0) {
-                const imgUrl =
-                    item.archivo[0].url ||
-                    (item.archivo[0].thumbnails?.large?.url ?? '');
-
-                if (imgUrl) {
-                    imgHtml = `<img src="${imgUrl}" loading="lazy">`;
-                }
-            }
-
-            // 📅 fecha segura
+            
+            // Imagen: Ahora es directo porque Make ya nos da solo la URL
+            const imgHtml = item.url_foto ? `<img src="${item.url_foto}" loading="lazy" alt="Evidencia">` : '';
+            
+            // Fecha: Usamos el campo "fecha" de tu Make
             let fechaDisplay = '---';
-            const fechaRaw = item["fecha y hora"] || item.fecha_y_hora;
-
-            if (fechaRaw) {
-                try {
-                    fechaDisplay = new Date(fechaRaw).toLocaleDateString('es-CL', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    }).toUpperCase();
-                } catch (e) {
-                    console.warn("Fecha inválida:", fechaRaw);
-                }
+            if (item.fecha) {
+                fechaDisplay = new Date(item.fecha).toLocaleDateString('es-CL', { 
+                    day:'2-digit', month:'short', year:'numeric' 
+                }).toUpperCase();
             }
 
+            // Estructura del Post
             entry.innerHTML = `
                 <div class="content">${item.mensaje || ''}</div>
                 ${imgHtml}
-                <span class="date">
-                    ${fechaDisplay} | CH_${(item.canal || 'S/N').toUpperCase()}
-                </span>
+                <span class="date">${fechaDisplay} | CH_${(item.canal || 'S/N').toUpperCase()}</span>
             `;
-
             feed.appendChild(entry);
         });
 
     } catch (error) {
         console.error('Error Lattice:', error);
-        document.getElementById('feed').innerHTML = `
-            <p style="text-align:center;opacity:0.5;">
-                Error al sintonizar la Lattice<br>
-                <small>${error.message}</small>
-            </p>`;
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">Sintonizando señales de la Lattice...</p>';
     }
 }
-
-// 🚀 IMPORTANTE: ejecutar
 loadBitacora();
 
         function filter(cat) {
