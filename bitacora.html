@@ -178,31 +178,36 @@ body.dark-mode .menu-content button {
         const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
 
      async function loadBitacora() {
+
     const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
-        if (!response.ok) throw new Error('No se pudo cargar el archivo');
+        if (!response.ok) throw new Error('No se pudo cargar el archivo (404)');
 
-        const rawText = await response.text();
-        const cleanText = rawText.trim(); 
+        let rawText = await response.text();
+        let cleanText = rawText.trim(); 
 
-        if (!cleanText || cleanText === "[]") {
-            document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">La Lattice está en silencio...</p>';
-            return;
+        if (cleanText.includes('("__IMTAGGLENGTH__"')) {
+             cleanText = cleanText.split(',"__IMTAGGLENGTH__"')[0] + "}";
         }
 
         const jsonResponse = JSON.parse(cleanText);
-        const data = jsonResponse.array ? jsonResponse.array : jsonResponse;
+        
+      
+        const data = jsonResponse.array ? jsonResponse.array : (Array.isArray(jsonResponse) ? jsonResponse : []);
 
-        if (!Array.isArray(data)) return;
+        if (data.length === 0) {
+            document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">La Lattice está en silencio...</p>';
+            return;
+        }
 
         const feed = document.getElementById('feed');
         feed.innerHTML = ''; 
 
         data.forEach(item => {
-            // Saltamos entradas vacías si las hay
-            if (!item.mensaje && !item.archivo) return;
+      
+            if (!item.mensaje && (!item.archivo || item.archivo.length === 0)) return;
 
             const entry = document.createElement('article');
             entry.className = 'entry';
@@ -210,15 +215,14 @@ body.dark-mode .menu-content button {
             const categoria = item.canal ? item.canal.toLowerCase() : 'otros';
             entry.setAttribute('data-category', categoria);
             
-            /* --- ARREGLO DE IMAGEN --- */
-            // Airtable manda una lista, buscamos la URL del primer elemento
+           
             let imgHtml = '';
-            if (item.archivo && item.archivo.length > 0) {
-                imgHtml = `<img src="${item.archivo[0].url}" loading="lazy" alt="Evidencia">`;
+            if (item.archivo && Array.isArray(item.archivo) && item.archivo.length > 0) {
+                const imgUrl = item.archivo[0].url || (item.archivo[0].thumbnails ? item.archivo[0].thumbnails.large.url : '');
+                if (imgUrl) imgHtml = `<img src="${imgUrl}" loading="lazy" alt="Evidencia">`;
             }
             
-            /* --- ARREGLO DE FECHA --- */
-            // Cambiamos item.fecha_y_hora por item["fecha y hora"]
+           
             let fechaDisplay = '---';
             const fechaRaw = item["fecha y hora"] || item.fecha_y_hora;
             if (fechaRaw) {
@@ -236,11 +240,14 @@ body.dark-mode .menu-content button {
         });
 
     } catch (error) {
-        console.error('Error detallado:', error);
-        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Sintonizando señales...</p>';
+        console.error('Error Lattice:', error);
+        document.getElementById('feed').innerHTML = `
+            <p style="text-align: center; opacity: 0.5; margin-top: 50px;">
+                Sintonizando señales... <br>
+                <small style="font-size: 0.6rem;">${error.message}</small>
+            </p>`;
     }
 }
-        loadBitacora();
 
         function filter(cat) {
             document.querySelectorAll('.entry').forEach(e => {
