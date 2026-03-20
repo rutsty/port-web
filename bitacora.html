@@ -178,7 +178,6 @@ body.dark-mode .menu-content button {
         const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
 
      async function loadBitacora() {
-  
     const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
     
     try {
@@ -194,37 +193,42 @@ body.dark-mode .menu-content button {
         }
 
         const jsonResponse = JSON.parse(cleanText);
-
-     
         const data = jsonResponse.array ? jsonResponse.array : jsonResponse;
 
-        if (!Array.isArray(data)) {
-            console.error("Los datos no son una lista válida:", data);
-            return;
-        }
+        if (!Array.isArray(data)) return;
 
         const feed = document.getElementById('feed');
         feed.innerHTML = ''; 
 
         data.forEach(item => {
+            // Saltamos entradas vacías si las hay
+            if (!item.mensaje && !item.archivo) return;
+
             const entry = document.createElement('article');
             entry.className = 'entry';
             
-          
             const categoria = item.canal ? item.canal.toLowerCase() : 'otros';
             entry.setAttribute('data-category', categoria);
             
-            const imgHtml = item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="Evidencia">` : '';
+            /* --- ARREGLO DE IMAGEN --- */
+            // Airtable manda una lista, buscamos la URL del primer elemento
+            let imgHtml = '';
+            if (item.archivo && item.archivo.length > 0) {
+                imgHtml = `<img src="${item.archivo[0].url}" loading="lazy" alt="Evidencia">`;
+            }
             
+            /* --- ARREGLO DE FECHA --- */
+            // Cambiamos item.fecha_y_hora por item["fecha y hora"]
             let fechaDisplay = '---';
-            if (item.fecha_y_hora) {
-                fechaDisplay = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', { 
+            const fechaRaw = item["fecha y hora"] || item.fecha_y_hora;
+            if (fechaRaw) {
+                fechaDisplay = new Date(fechaRaw).toLocaleDateString('es-CL', { 
                     day:'2-digit', month:'short', year:'numeric' 
                 }).toUpperCase();
             }
 
             entry.innerHTML = `
-                <div class="content">${item.mensaje || 'Sin mensaje'}</div>
+                <div class="content">${item.mensaje || ''}</div>
                 ${imgHtml}
                 <span class="date">${fechaDisplay} | CH_${(item.canal || 'S/N').toUpperCase()}</span>
             `;
@@ -233,7 +237,7 @@ body.dark-mode .menu-content button {
 
     } catch (error) {
         console.error('Error detallado:', error);
-        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Sintonizando señales... (Revisa la consola F12)</p>';
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Sintonizando señales...</p>';
     }
 }
         loadBitacora();
