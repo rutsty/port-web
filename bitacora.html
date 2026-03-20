@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⋆.˚ ☼⋆𓇼｡𖦹˙༄.° </title>
+    <style>
+        :root { 
+            --bg-color: #fafafa; 
+            --text-color: #1a4a75; 
+            --entry-bg: #ffffff;
+            --accent: #5dade2;
+        }
+
+        body.dark-mode { 
+            --bg-color: #0b0f19; 
+            --text-color: #94e2d5; 
+            --entry-bg: #161b22;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 0;
+            color: var(--text-color);
+            transition: background-color 1.2s ease, color 1.2s ease;
+            overflow-x: hidden;
+        }
+
+       
+        #theme-toggle {
+            position: fixed; top: 25px; left: 35px; z-index: 2000;
+            background: transparent; border: 1px solid var(--text-color);
+            color: var(--text-color); padding: 5px 15px; border-radius: 50px;
+            cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
+            opacity: 0.6;
+        }
+        #theme-toggle:hover { opacity: 1; box-shadow: 0 0 10px var(--accent); }
+
+        .menu-container {
+            position: fixed; top: 25px; right: 35px; z-index: 2000;
+            text-align: right;
+        }
+        .menu-arrow {
+            font-size: 1.5rem; cursor: pointer; opacity: 0.4; transition: 0.3s;
+            display: inline-block; transform: rotate(90deg);
+        }
+        .menu-arrow:hover { opacity: 1; color: var(--accent); }
+
+        .menu-content {
+            display: none; background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(12px); border-radius: 12px; padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-top: 10px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .menu-container:hover .menu-content { display: block; animation: fadeIn 0.3s ease; }
+
+        .menu-content button {
+            display: block; width: 100%; background: none; border: none;
+            padding: 10px 20px; text-align: right; cursor: pointer;
+            font-size: 0.8rem; letter-spacing: 2px; color: #1a4a75;
+            transition: 0.3s ease; 
+        }
+        .menu-content button:hover { color: var(--accent); transform: translateX(-10px); }
+
+        header { padding: 12vh 0 6vh; text-align: center; }
+        h1 { font-weight: 700; letter-spacing: 6px; text-transform: uppercase; font-size: 0.85rem; opacity: 0.6; }
+
+       
+        #feed { 
+            column-count: 4; column-gap: 25px;
+            padding: 20px; max-width: 98vw; margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) { #feed { column-count: 3; } }
+        @media (max-width: 850px) { #feed { column-count: 2; } }
+        @media (max-width: 550px) { #feed { column-count: 1; } }
+
+        .entry { 
+            break-inside: avoid; margin-bottom: 30px;
+            background: var(--entry-bg); padding: 25px; 
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+        .entry:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+
+        .content { font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.7; color: var(--text-color); }
+        .date { font-size: 0.65rem; opacity: 0.3; text-align: right; margin-top: 15px; font-family: 'Courier New', monospace; }
+        .entry img { width: calc(100% + 50px); margin-left: -25px; margin-top: 10px; filter: saturate(0.8); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle" onclick="toggleDarkMode()">⋅˚.⋆☾⁺₊ ‧</button>
+
+    <div class="menu-container">
+        <div class="menu-arrow">➤</div>
+        <div class="menu-content">
+            <button onmouseover="playPop()" onclick="filter('all')">VER TODO</button>
+            <button onmouseover="playPop()" onclick="filter('referencias')">REFERENCIAS</button>
+            <button onmouseover="playPop()" onclick="filter('material')">PRUEBA MATERIAL</button>
+            <button onmouseover="playPop()" onclick="filter('diaria')">BITÁCORA DIARIA</button>
+            <button onmouseover="playPop()" onclick="filter('vida')">LA VIDA</button>
+        </div>
+    </div>
+
+    <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
+
+    <main id="feed">
+        <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice Sintérgica...</p>
+    </main>
+
+    <script>
+        let audioCtx;
+        let isMusicPlaying = false;
+      
+        const notes = [216, 256.8, 324, 384, 432]; 
+
+        
+        function playPop() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+            g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playDreamMusic() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(isMusicPlaying) return;
+            isMusicPlaying = true;
+
+            setInterval(() => {
+             
+                if(!document.body.classList.contains('dark-mode')) return;
+                
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                const freq = notes[Math.floor(Math.random() * notes.length)];
+                
+                osc.type = 'sine'; 
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                g.gain.setValueAtTime(0, audioCtx.currentTime);
+                
+              
+                g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
+                g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
+                
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 8);
+            }, 8000);
+        }
+
+        function toggleDarkMode() {
+            playPop();
+            document.body.classList.toggle('dark-mode');
+            if(document.body.classList.contains('dark-mode')) {
+                playDreamMusic();
+            }
+        }
+
+        const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
+
+        async function loadBitacora() {
+            try {
+                const response = await fetch(repoURL);
+                const data = await response.json();
+                const feed = document.getElementById('feed');
+                feed.innerHTML = ''; 
+
+                data.forEach(item => {
+                    const entry = document.createElement('article');
+                    entry.className = 'entry';
+                    entry.setAttribute('data-category', item.canal.toLowerCase());
+                    
+                    const imgHtml = item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="Evidencia">` : '';
+                    const fecha = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+
+                    entry.innerHTML = `
+                        <div class="content">${item.mensaje}</div>
+                        ${imgHtml}
+                        <span class="date">${fecha} | CH_${item.canal.toUpperCase()}</span>
+                    `;
+                    feed.appendChild(entry);
+                });
+            } catch (error) {
+                console.log('Error conectando a la Lattice...', error);
+                document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Error al recuperar la memoria...</p>';
+            }
+        }
+        loadBitacora();
+
+        function filter(cat) {
+            document.querySelectorAll('.entry').forEach(e => {
+                e.style.display = (cat === 'all' || e.dataset.category.includes(cat)) ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
