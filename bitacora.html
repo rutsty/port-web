@@ -173,105 +173,65 @@ function toggleDarkMode() {
 }
 
 
-const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
-
 async function loadBitacora() {
-    const finalURL = repoURL + '?t=' + Date.now(); // evitar cache
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
-        if (!response.ok) throw new Error('No se pudo cargar el JSON');
+        if (!response.ok) throw new Error('Señal no encontrada');
 
-        const text = await response.text();
-        const jsonResponse = JSON.parse(text.trim());
+        const rawText = await response.text();
+        // Limpiamos basura técnica de Make (el __IMTAGG) si existe
+        const cleanText = rawText.includes('__IMTAGGLENGTH__') 
+            ? rawText.substring(0, rawText.lastIndexOf(',')) + "}" 
+            : rawText;
 
-        console.log("JSON recibido:", jsonResponse);
+        const json = JSON.parse(cleanText.trim());
 
- 
+        // BUSCADOR UNIVERSAL: Intentamos encontrar la lista de mensajes
         let data = [];
-
-        if (Array.isArray(jsonResponse)) {
-            data = jsonResponse;
-        } else if (jsonResponse.array && Array.isArray(jsonResponse.array)) {
-            data = jsonResponse.array;
-        } else {
-            console.warn("Formato inesperado");
-        }
+        if (Array.isArray(json)) data = json;
+        else if (json.array && Array.isArray(json.array)) data = json.array;
+        else if (json.Array && Array.isArray(json.Array)) data = json.Array;
+        else data = [json]; // Si es un solo objeto, lo metemos en una lista
 
         const feed = document.getElementById('feed');
-        feed.innerHTML = '';
-
-        if (!data.length) {
-            feed.innerHTML = '<p style="text-align:center;opacity:0.5;">La Lattice está en silencio...</p>';
-            return;
-        }
+        feed.innerHTML = ''; 
 
         data.forEach(item => {
+            // Mapeo flexible de nombres
+            const msg = item.mensaje || '';
+            const canal = (item.canal || 'S/N').toLowerCase();
+            const rawFecha = item.fecha || item["fecha y hora"] || item.fecha_y_hora;
+            
+            // Buscador de imagen (url_foto o el objeto archivo original)
+            let foto = item.url_foto || '';
+            if (!foto && item.archivo && item.archivo[0]) {
+                foto = item.archivo[0].thumbnails?.large?.url || item.archivo[0].url;
+            }
 
-            if (!item || (!item.mensaje && !item.archivo)) return;
+            if (!msg && !foto) return;
 
             const entry = document.createElement('article');
             entry.className = 'entry';
-
-            const categoria = item.canal ? item.canal.toLowerCase() : 'otros';
-            entry.setAttribute('data-category', categoria);
-
-         
-            let imgHtml = '';
-            if (item.archivo && Array.isArray(item.archivo) && item.archivo.length > 0) {
-                const imgUrl =
-                    item.archivo[0].url ||
-                    item.archivo[0]?.thumbnails?.large?.url;
-
-                if (imgUrl) {
-                    imgHtml = `<img src="${imgUrl}" loading="lazy">`;
-                }
-            }
-
-      
-            let fechaDisplay = '---';
-            const fechaRaw = item["fecha y hora"] || item.fecha;
-
-            if (fechaRaw) {
-                try {
-                    fechaDisplay = new Date(fechaRaw).toLocaleDateString('es-CL', {
-                        day:'2-digit',
-                        month:'short',
-                        year:'numeric'
-                    }).toUpperCase();
-                } catch(e) {
-                    console.warn("Fecha inválida");
-                }
-            }
+            entry.setAttribute('data-category', canal);
+            
+            const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
+            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { 
+                day:'2-digit', month:'short', year:'numeric' 
+            }).toUpperCase() : '---';
 
             entry.innerHTML = `
-                <div class="content">${item.mensaje || ''}</div>
+                <div class="content">${msg}</div>
                 ${imgHtml}
-                <span class="date">
-                    ${fechaDisplay} | CH_${(item.canal || 'S/N').toUpperCase()}
-                </span>
+                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
             `;
-
             feed.appendChild(entry);
         });
 
     } catch (error) {
-        console.error('Error Lattice:', error);
-        document.getElementById('feed').innerHTML = `
-            <p style="text-align:center;opacity:0.5;">
-                Error al sintonizar la Lattice<br>
-                <small>${error.message}</small>
-            </p>`;
+        console.error('Error Crítico:', error);
     }
-}
-
-
-loadBitacora();
-
-function filter(cat) {
-    document.querySelectorAll('.entry').forEach(e => {
-        e.style.display = (cat === 'all' || e.dataset.category.includes(cat)) ? 'flex' : 'none';
-    });
 }
 </script>
     
