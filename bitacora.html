@@ -166,64 +166,72 @@
         }
 
         async function loadBitacora() {
-            const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
-            try {
-                const response = await fetch(finalURL);
-                const rawText = await response.text();
-                let cleanText = rawText.trim();
-                
-                // Limpieza de basura técnica de Make
-                if (cleanText.includes('__IMTAGGLENGTH__')) {
-                    const lastComma = cleanText.lastIndexOf(',');
-                    if (lastComma !== -1) cleanText = cleanText.substring(0, lastComma) + "}";
-                }
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
+    
+    try {
+        const response = await fetch(finalURL);
+        const rawText = await response.text();
+        
+        // Limpieza de metadatos de Make (__IMTAGG)
+        let cleanText = rawText.trim();
+        if (cleanText.includes('__IMTAGGLENGTH__')) {
+            const lastIndex = cleanText.lastIndexOf(',');
+            if (lastIndex !== -1) cleanText = cleanText.substring(0, lastIndex) + "}";
+        }
 
-                const json = JSON.parse(cleanText);
-                
-                // Detector de lista flexible
-                let data = [];
-                if (Array.isArray(json)) data = json;
-                else if (json.array || json.Array) data = json.array || json.Array;
-                else data = [json];
+        const json = JSON.parse(cleanText);
+        let data = [];
 
-                const feed = document.getElementById('feed');
-                feed.innerHTML = ''; 
-
-                data.forEach((item) => {
-                    const msg = item.mensaje || '';
-                    const canal = (item.canal || 'S/N').toLowerCase();
-                    const foto = item.url_foto || '';
-                    const rawFecha = item.fecha || item["fecha y hora"];
-
-                    if (!msg && !foto) return;
-
-                    const entry = document.createElement('article');
-                    entry.className = 'entry';
-                    entry.setAttribute('data-category', canal);
-                    
-                    const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
-                    const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase() : '---';
-
-                    entry.innerHTML = `
-                        <div class="content">${msg}</div>
-                        ${imgHtml}
-                        <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
-                    `;
-                    feed.appendChild(entry);
-                });
-            } catch (e) {
-                console.error("Error Lattice:", e);
+        // --- EL TRUCO PARA TU JSON ESPECÍFICO ---
+        if (json.Array && Array.isArray(json.Array)) {
+            // Si el primer elemento es un texto que parece JSON, lo abrimos
+            if (typeof json.Array[0] === 'string' && json.Array[0].startsWith('{')) {
+                const innerJson = JSON.parse(json.Array[0]);
+                data = innerJson.array || innerJson;
+            } else {
+                data = json.Array;
             }
+        } else {
+            data = Array.isArray(json) ? json : (json.array || [json]);
         }
 
-        function filter(cat) {
-            document.querySelectorAll('.entry').forEach(e => {
-                e.style.display = (cat === 'all' || e.dataset.category.includes(cat)) ? 'flex' : 'none';
-            });
-        }
+        const feed = document.getElementById('feed');
+        feed.innerHTML = ''; 
 
-        // Llamamos a la función al cargar la página
-        loadBitacora();
+        data.forEach((item) => {
+            // Buscamos datos en cualquier formato (Airtable original o nuestro Make limpio)
+            const msg = item.mensaje || '';
+            const canal = (item.canal || 'S/N').toLowerCase();
+            const rawFecha = item.fecha || item["fecha y hora"] || item.fecha_y_hora;
+            
+            // Buscamos la foto (url_foto o el objeto archivo de Airtable)
+            let foto = item.url_foto || '';
+            if (!foto && item.archivo && item.archivo[0]) {
+                foto = item.archivo[0].thumbnails?.large?.url || item.archivo[0].url;
+            }
+
+            if (!msg && !foto) return;
+
+            const entry = document.createElement('article');
+            entry.className = 'entry';
+            entry.setAttribute('data-category', canal);
+            
+            const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
+            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { 
+                day:'2-digit', month:'short', year:'numeric' 
+            }).toUpperCase() : '---';
+
+            entry.innerHTML = `
+                <div class="content">${msg}</div>
+                ${imgHtml}
+                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+            `;
+            feed.appendChild(entry);
+        });
+    } catch (e) {
+        console.error("Error Lattice:", e);
+    }
+}
     </script>
 </body>
 </html>
