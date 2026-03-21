@@ -171,7 +171,7 @@
         const response = await fetch(finalURL);
         const rawText = await response.text();
         
-        
+        // 1. Limpieza de residuos técnicos de Make
         let cleanText = rawText.trim();
         if (cleanText.includes('__IMTAGGLENGTH__')) {
             const lastComma = cleanText.lastIndexOf(',');
@@ -182,10 +182,10 @@
         let data = json.Array || json.array || [];
 
         const feed = document.getElementById('feed');
-        feed.innerHTML = ''; 
+        if (feed) feed.innerHTML = ''; 
 
         data.forEach((item) => {
-            l
+            // 2. Convertimos el texto con barras \" en objeto real
             let content;
             try {
                 content = typeof item === 'string' ? JSON.parse(item) : item;
@@ -195,10 +195,9 @@
             const canal = (content.canal || 'S/N').toLowerCase();
             const rawFecha = content["fecha y hora"] || content.fecha;
             
-            
+            // 3. Extractor de imágenes para el formato de Airtable
             let foto = '';
             if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                
                 foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
             }
 
@@ -218,7 +217,7 @@
                 ${imgHtml}
                 <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
             `;
-            feed.appendChild(entry);
+            if (feed) feed.appendChild(entry);
         });
 
     } catch (e) {
@@ -226,6 +225,7 @@
     }
 }
 
+// Ejecutamos la función correctamente sin letras extrañas
 loadBitacora();
     </script>
 </body>
