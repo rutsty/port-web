@@ -165,7 +165,7 @@
         }
 
        async function loadBitacora() {
-    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json' + Date.now();
     
     try {
         const response = await fetch(finalURL);
