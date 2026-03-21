@@ -185,7 +185,7 @@
         feed.innerHTML = ''; 
 
         data.forEach((item) => {
-            // 2. EL TRUCO: Convertimos el texto con barras \" en un objeto real
+            l
             let content;
             try {
                 content = typeof item === 'string' ? JSON.parse(item) : item;
@@ -195,10 +195,10 @@
             const canal = (content.canal || 'S/N').toLowerCase();
             const rawFecha = content["fecha y hora"] || content.fecha;
             
-            // 3. EXTRACTOR DE IMÁGENES: Navegamos por la estructura de Airtable
+            
             let foto = '';
             if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                // Buscamos la versión 'large' para que se vea nítida
+                
                 foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
             }
 
