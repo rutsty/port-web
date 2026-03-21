@@ -178,38 +178,58 @@ async function loadBitacora() {
     
     try {
         const response = await fetch(finalURL);
-        if (!response.ok) throw new Error('Señal no encontrada');
+        if (!response.ok) return;
 
         const rawText = await response.text();
-        // Limpiamos basura técnica de Make (el __IMTAGG) si existe
-        const cleanText = rawText.includes('__IMTAGGLENGTH__') 
-            ? rawText.substring(0, rawText.lastIndexOf(',')) + "}" 
-            : rawText;
+        
+        // LIMPIEZA DE BASURA DE MAKE (__IMTAGGLENGTH__)
+        let cleanText = rawText.trim();
+        if (cleanText.includes('__IMTAGGLENGTH__')) {
+            const lastComma = cleanText.lastIndexOf(',');
+            if (lastComma !== -1) {
+                cleanText = cleanText.substring(0, lastComma) + "}";
+            }
+        }
 
-        const json = JSON.parse(cleanText.trim());
-
-        // BUSCADOR UNIVERSAL: Intentamos encontrar la lista de mensajes
+        const json = JSON.parse(cleanText);
         let data = [];
-        if (Array.isArray(json)) data = json;
-        else if (json.array && Array.isArray(json.array)) data = json.array;
-        else if (json.Array && Array.isArray(json.Array)) data = json.Array;
-        else data = [json]; // Si es un solo objeto, lo metemos en una lista
+
+        // --- BUSCADOR AGRESIVO DE DATOS ---
+        // Caso 1: Es una lista directa []
+        if (Array.isArray(json)) {
+            data = json;
+        } 
+        // Caso 2: Los datos están en .array o .Array
+        else if (json.array && Array.isArray(json.array)) {
+            data = json.array;
+        } 
+        else if (json.Array && Array.isArray(json.Array)) {
+            data = json.Array;
+        }
+        // Caso 3: Es un solo objeto {} (lo metemos en una lista de 1)
+        else if (typeof json === 'object' && json !== null) {
+            data = [json];
+        }
 
         const feed = document.getElementById('feed');
+        if (!feed) return;
         feed.innerHTML = ''; 
 
         data.forEach(item => {
-            // Mapeo flexible de nombres
+            // Buscamos mensaje y canal en cualquier formato
             const msg = item.mensaje || '';
             const canal = (item.canal || 'S/N').toLowerCase();
+            
+            // Buscamos la fecha (soporta todos los nombres que hemos probado)
             const rawFecha = item.fecha || item["fecha y hora"] || item.fecha_y_hora;
             
-            // Buscador de imagen (url_foto o el objeto archivo original)
+            // Buscamos la imagen (url_foto o el objeto archivo de Airtable)
             let foto = item.url_foto || '';
-            if (!foto && item.archivo && item.archivo[0]) {
+            if (!foto && item.archivo && Array.isArray(item.archivo) && item.archivo[0]) {
                 foto = item.archivo[0].thumbnails?.large?.url || item.archivo[0].url;
             }
 
+            // Si no hay mensaje ni foto, no mostramos nada
             if (!msg && !foto) return;
 
             const entry = document.createElement('article');
@@ -217,9 +237,13 @@ async function loadBitacora() {
             entry.setAttribute('data-category', canal);
             
             const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
-            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { 
-                day:'2-digit', month:'short', year:'numeric' 
-            }).toUpperCase() : '---';
+            
+            let fechaDisplay = '---';
+            if (rawFecha) {
+                fechaDisplay = new Date(rawFecha).toLocaleDateString('es-CL', { 
+                    day:'2-digit', month:'short', year:'numeric' 
+                }).toUpperCase();
+            }
 
             entry.innerHTML = `
                 <div class="content">${msg}</div>
@@ -229,8 +253,8 @@ async function loadBitacora() {
             feed.appendChild(entry);
         });
 
-    } catch (error) {
-        console.error('Error Crítico:', error);
+    } catch (e) {
+        console.log("Reintentando sintonización...");
     }
 }
 </script>
