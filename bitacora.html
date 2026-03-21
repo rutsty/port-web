@@ -121,7 +121,7 @@
         <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice Sintérgica...</p>
     </main>
 
-   <script>
+  <script>
     let audioCtx;
     let isMusicPlaying = false;
     const notes = [216, 256.8, 324, 384, 432]; 
@@ -164,18 +164,12 @@
         }
     }
 
-    // --- FUNCIÓN DE FILTRADO (Faltaba en tu código) ---
     function filter(cat) {
         playPop();
         const entries = document.querySelectorAll('.entry');
         entries.forEach(entry => {
             const category = entry.getAttribute('data-category') || '';
-            // Ajuste para que coincida con tus botones (diaria, material, etc)
-            if (cat === 'all' || category.includes(cat)) {
-                entry.style.display = 'flex';
-            } else {
-                entry.style.display = 'none';
-            }
+            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
         });
     }
 
@@ -184,45 +178,44 @@
         
         try {
             const response = await fetch(finalURL);
-            const rawText = await response.text();
+            let rawText = await response.text();
             
-            // 1. Limpieza profunda de basura de Make
+            // 1. LIMPIEZA AGRESIVA DE MAKE (Buscamos el JSON real entre la basura)
             let cleanText = rawText.trim();
-            if (cleanText.includes('__IMTAGGLENGTH__')) {
-                // Buscamos donde termina el array real y cortamos la basura
-                const lastBracket = cleanText.lastIndexOf(']');
-                if (lastBracket !== -1) {
-                    cleanText = cleanText.substring(0, lastBracket + 1) + "}";
-                    // Si el inicio es {"Array": , nos aseguramos que cierre con }
-                    if (!cleanText.startsWith('{')) cleanText = "{" + cleanText;
-                    if (cleanText.split('[').length > cleanText.split(']').length) cleanText += "]";
-                    if (cleanText.split('{').length > cleanText.split('}').length) cleanText += "}";
-                }
+            const firstBracket = cleanText.indexOf('{');
+            const lastBracket = cleanText.lastIndexOf('}');
+            if (firstBracket !== -1 && lastBracket !== -1) {
+                cleanText = cleanText.substring(firstBracket, lastBracket + 1);
             }
 
             const json = JSON.parse(cleanText);
+            
+            // Buscamos la lista en Array, array o el objeto mismo
             let data = json.Array || json.array || [];
 
             const feed = document.getElementById('feed');
             if (feed) feed.innerHTML = ''; 
 
             data.forEach((item) => {
-                // 2. Doble Parseo (Para limpiar las barras \")
+                // 2. EL ABRE-LATAS: Si el item es un texto con comillas, lo parseamos
                 let content;
                 try {
-                    content = typeof item === 'string' ? JSON.parse(item) : item;
+                    content = (typeof item === 'string') ? JSON.parse(item) : item;
                 } catch(e) { return; } 
 
                 if (!content || typeof content !== 'object') return;
 
+                // Mapeo flexible de campos
                 const msg = content.mensaje || '';
                 const canal = (content.canal || 'S/N').toLowerCase();
                 const rawFecha = content["fecha y hora"] || content.fecha;
                 
-                // 3. Extractor de imágenes (Thumbnails de Airtable)
+                // 3. EXTRACTOR DE IMÁGENES (Buceo profundo en Airtable)
                 let foto = '';
                 if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
                     foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
+                } else if (content.url_foto) {
+                    foto = content.url_foto;
                 }
 
                 if (!msg && !foto) return;
@@ -231,9 +224,8 @@
                 entry.className = 'entry';
                 entry.setAttribute('data-category', canal);
                 
-                const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
+                const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
                 
-                // Formateo de fecha
                 let fechaDisplay = '---';
                 if (rawFecha) {
                     const d = new Date(rawFecha);
@@ -251,15 +243,11 @@
             });
 
         } catch (e) {
-            console.error("Error en la Lattice:", e);
-            const feed = document.getElementById('feed');
-            if (feed) feed.innerHTML = '<p style="text-align:center; opacity:0.5;">Error al sintonizar la señal...</p>';
+            console.error("Lattice bloqueada:", e);
         }
     }
 
-    // Carga inicial
     loadBitacora();
-    
 </script>
 </body>
 </html>
