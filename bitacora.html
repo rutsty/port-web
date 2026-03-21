@@ -121,112 +121,145 @@
         <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice Sintérgica...</p>
     </main>
 
-    <script>
-        let audioCtx;
-        let isMusicPlaying = false;
-        const notes = [216, 256.8, 324, 384, 432]; 
+   <script>
+    let audioCtx;
+    let isMusicPlaying = false;
+    const notes = [216, 256.8, 324, 384, 432]; 
 
-        function playPop() {
-            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playPop() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+        g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playDreamMusic() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(isMusicPlaying) return;
+        isMusicPlaying = true;
+        setInterval(() => {
+            if(!document.body.classList.contains('dark-mode')) return;
             const osc = audioCtx.createOscillator();
             const g = audioCtx.createGain();
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
-            g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            const freq = notes[Math.floor(Math.random() * notes.length)];
+            osc.type = 'sine'; 
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            g.gain.setValueAtTime(0, audioCtx.currentTime);
+            g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
+            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
             osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playDreamMusic() {
-            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if(isMusicPlaying) return;
-            isMusicPlaying = true;
-            setInterval(() => {
-                if(!document.body.classList.contains('dark-mode')) return;
-                const osc = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                const freq = notes[Math.floor(Math.random() * notes.length)];
-                osc.type = 'sine'; 
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                g.gain.setValueAtTime(0, audioCtx.currentTime);
-                g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
-                g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
-                osc.connect(g); g.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 8);
-            }, 8000);
-        }
-
-        function toggleDarkMode() {
-            playPop();
-            document.body.classList.toggle('dark-mode');
-            if(document.body.classList.contains('dark-mode')) {
-                playDreamMusic();
-            }
-        }
-
-       async function loadBitacora() {
-    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
-    
-    try {
-        const response = await fetch(finalURL);
-        const rawText = await response.text();
-        
-        // 1. Limpieza de residuos técnicos de Make
-        let cleanText = rawText.trim();
-        if (cleanText.includes('__IMTAGGLENGTH__')) {
-            const lastComma = cleanText.lastIndexOf(',');
-            if (lastComma !== -1) cleanText = cleanText.substring(0, lastComma) + "}";
-        }
-
-        const json = JSON.parse(cleanText);
-        let data = json.Array || json.array || [];
-
-        const feed = document.getElementById('feed');
-        if (feed) feed.innerHTML = ''; 
-
-        data.forEach((item) => {
-            // 2. Convertimos el texto con barras \" en objeto real
-            let content;
-            try {
-                content = typeof item === 'string' ? JSON.parse(item) : item;
-            } catch(e) { return; } 
-
-            const msg = content.mensaje || '';
-            const canal = (content.canal || 'S/N').toLowerCase();
-            const rawFecha = content["fecha y hora"] || content.fecha;
-            
-            // 3. Extractor de imágenes para el formato de Airtable
-            let foto = '';
-            if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
-            }
-
-            if (!msg && !foto) return;
-
-            const entry = document.createElement('article');
-            entry.className = 'entry';
-            entry.setAttribute('data-category', canal);
-            
-            const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
-            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { 
-                day:'2-digit', month:'short', year:'numeric' 
-            }).toUpperCase() : '---';
-
-            entry.innerHTML = `
-                <div class="content">${msg}</div>
-                ${imgHtml}
-                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
-            `;
-            if (feed) feed.appendChild(entry);
-        });
-
-    } catch (e) {
-        console.error("Error en la Lattice:", e);
+            osc.start(); osc.stop(audioCtx.currentTime + 8);
+        }, 8000);
     }
-}
 
-// Ejecutamos la función correctamente sin letras extrañas
-loadBitacora();
-    </script>
+    function toggleDarkMode() {
+        playPop();
+        document.body.classList.toggle('dark-mode');
+        if(document.body.classList.contains('dark-mode')) {
+            playDreamMusic();
+        }
+    }
+
+    // --- FUNCIÓN DE FILTRADO (Faltaba en tu código) ---
+    function filter(cat) {
+        playPop();
+        const entries = document.querySelectorAll('.entry');
+        entries.forEach(entry => {
+            const category = entry.getAttribute('data-category') || '';
+            // Ajuste para que coincida con tus botones (diaria, material, etc)
+            if (cat === 'all' || category.includes(cat)) {
+                entry.style.display = 'flex';
+            } else {
+                entry.style.display = 'none';
+            }
+        });
+    }
+
+    async function loadBitacora() {
+        const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
+        
+        try {
+            const response = await fetch(finalURL);
+            const rawText = await response.text();
+            
+            // 1. Limpieza profunda de basura de Make
+            let cleanText = rawText.trim();
+            if (cleanText.includes('__IMTAGGLENGTH__')) {
+                // Buscamos donde termina el array real y cortamos la basura
+                const lastBracket = cleanText.lastIndexOf(']');
+                if (lastBracket !== -1) {
+                    cleanText = cleanText.substring(0, lastBracket + 1) + "}";
+                    // Si el inicio es {"Array": , nos aseguramos que cierre con }
+                    if (!cleanText.startsWith('{')) cleanText = "{" + cleanText;
+                    if (cleanText.split('[').length > cleanText.split(']').length) cleanText += "]";
+                    if (cleanText.split('{').length > cleanText.split('}').length) cleanText += "}";
+                }
+            }
+
+            const json = JSON.parse(cleanText);
+            let data = json.Array || json.array || [];
+
+            const feed = document.getElementById('feed');
+            if (feed) feed.innerHTML = ''; 
+
+            data.forEach((item) => {
+                // 2. Doble Parseo (Para limpiar las barras \")
+                let content;
+                try {
+                    content = typeof item === 'string' ? JSON.parse(item) : item;
+                } catch(e) { return; } 
+
+                if (!content || typeof content !== 'object') return;
+
+                const msg = content.mensaje || '';
+                const canal = (content.canal || 'S/N').toLowerCase();
+                const rawFecha = content["fecha y hora"] || content.fecha;
+                
+                // 3. Extractor de imágenes (Thumbnails de Airtable)
+                let foto = '';
+                if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
+                    foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
+                }
+
+                if (!msg && !foto) return;
+
+                const entry = document.createElement('article');
+                entry.className = 'entry';
+                entry.setAttribute('data-category', canal);
+                
+                const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
+                
+                // Formateo de fecha
+                let fechaDisplay = '---';
+                if (rawFecha) {
+                    const d = new Date(rawFecha);
+                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
+                        day:'2-digit', month:'short', year:'numeric' 
+                    }).toUpperCase();
+                }
+
+                entry.innerHTML = `
+                    <div class="content">${msg}</div>
+                    ${imgHtml}
+                    <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+                `;
+                if (feed) feed.appendChild(entry);
+            });
+
+        } catch (e) {
+            console.error("Error en la Lattice:", e);
+            const feed = document.getElementById('feed');
+            if (feed) feed.innerHTML = '<p style="text-align:center; opacity:0.5;">Error al sintonizar la señal...</p>';
+        }
+    }
+
+    // Carga inicial
+    loadBitacora();
+    
+</script>
 </body>
 </html>
