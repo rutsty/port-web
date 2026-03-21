@@ -25,18 +25,18 @@
             color: var(--text-color);
             transition: background-color 1.2s ease, color 1.2s ease;
             overflow-x: hidden;
-       
-            body.dark-mode .menu-content {
-    background: rgba(22, 27, 34, 0.95);
-    border: 1px solid rgba(148, 226, 213, 0.2);
-}
+        }
 
-body.dark-mode .menu-content button {
-    color: #94e2d5;
-}
-        
+        /* --- CORRECCIÓN DE LLAVES AQUÍ --- */
+        body.dark-mode .menu-content {
+            background: rgba(22, 27, 34, 0.95);
+            border: 1px solid rgba(148, 226, 213, 0.2);
+        }
 
-       
+        body.dark-mode .menu-content button {
+            color: #94e2d5;
+        }
+
         #theme-toggle {
             position: fixed; top: 25px; left: 35px; z-index: 2000;
             background: transparent; border: 1px solid var(--text-color);
@@ -75,7 +75,6 @@ body.dark-mode .menu-content button {
         header { padding: 12vh 0 6vh; text-align: center; }
         h1 { font-weight: 700; letter-spacing: 6px; text-transform: uppercase; font-size: 0.85rem; opacity: 0.6; }
 
-       
         #feed { 
             column-count: 4; column-gap: 25px;
             padding: 20px; max-width: 98vw; margin: 0 auto;
@@ -124,116 +123,93 @@ body.dark-mode .menu-content button {
     </main>
 
     <script>
-let audioCtx;
-let isMusicPlaying = false;
+        let audioCtx;
+        let isMusicPlaying = false;
+        const notes = [216, 256.8, 324, 384, 432]; 
 
-const notes = [216, 256.8, 324, 384, 432]; 
-
-function playPop() {
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
-    g.gain.setValueAtTime(0.01, audioCtx.currentTime);
-    osc.connect(g); g.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-}
-
-function playDreamMusic() {
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if(isMusicPlaying) return;
-    isMusicPlaying = true;
-
-    setInterval(() => {
-        if(!document.body.classList.contains('dark-mode')) return;
-        
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        const freq = notes[Math.floor(Math.random() * notes.length)];
-        
-        osc.type = 'sine'; 
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        g.gain.setValueAtTime(0, audioCtx.currentTime);
-        
-        g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
-        g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
-        
-        osc.connect(g); g.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 8);
-    }, 8000);
-}
-
-function toggleDarkMode() {
-    playPop();
-    document.body.classList.toggle('dark-mode');
-    if(document.body.classList.contains('dark-mode')) {
-        playDreamMusic();
-    }
-}
-
-
-async function loadBitacora() {
-    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
-    
-    try {
-        const response = await fetch(finalURL);
-        const rawText = await response.text();
-        console.log("1. Datos crudos recibidos:", rawText);
-
-        let cleanText = rawText.trim();
-        // Limpieza de basura técnica de Make
-        if (cleanText.includes('__IMTAGGLENGTH__')) {
-            cleanText = cleanText.substring(0, cleanText.lastIndexOf(',')) + "}";
+        function playPop() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+            g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
 
-        const json = JSON.parse(cleanText);
-        console.log("2. JSON parseado correctamente:", json);
-
-        let data = [];
-        if (Array.isArray(json)) data = json;
-        else if (json.array || json.Array) data = json.array || json.Array;
-        else data = [json];
-
-        console.log("3. Lista de mensajes a procesar:", data);
-
-        const feed = document.getElementById('feed');
-        feed.innerHTML = ''; 
-
-        if (data.length === 0 || (data.length === 1 && !data[0].mensaje && !data[0].url_foto)) {
-            feed.innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">La Lattice está vacía (Airtable no envió datos válidos).</p>';
-            return;
+        function playDreamMusic() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(isMusicPlaying) return;
+            isMusicPlaying = true;
+            setInterval(() => {
+                if(!document.body.classList.contains('dark-mode')) return;
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                const freq = notes[Math.floor(Math.random() * notes.length)];
+                osc.type = 'sine'; 
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                g.gain.setValueAtTime(0, audioCtx.currentTime);
+                g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
+                g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 8);
+            }, 8000);
         }
 
-        data.forEach((item, index) => {
-            // Buscamos los nombres exactos que pusiste en Make
-            const msg = item.mensaje || '';
-            const canal = (item.canal || 'S/N').toLowerCase();
-            const foto = item.url_foto || '';
-            const rawFecha = item.fecha || item["fecha y hora"];
+        function toggleDarkMode() {
+            playPop();
+            document.body.classList.toggle('dark-mode');
+            if(document.body.classList.contains('dark-mode')) {
+                playDreamMusic();
+            }
+        }
 
-            console.log(`Entry ${index}:`, { msg, canal, foto, rawFecha });
+        async function loadBitacora() {
+            const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
+            try {
+                const response = await fetch(finalURL);
+                const rawText = await response.text();
+                let cleanText = rawText.trim();
+                if (cleanText.includes('__IMTAGGLENGTH__')) {
+                    cleanText = cleanText.substring(0, cleanText.lastIndexOf(',')) + "}";
+                }
+                const json = JSON.parse(cleanText);
+                let data = Array.isArray(json) ? json : (json.array || json.Array || [json]);
+                
+                const feed = document.getElementById('feed');
+                feed.innerHTML = ''; 
 
-            const entry = document.createElement('article');
-            entry.className = 'entry';
-            entry.setAttribute('data-category', canal);
-            
-            const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
-            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase() : '---';
+                data.forEach((item) => {
+                    const msg = item.mensaje || '';
+                    const canal = (item.canal || 'S/N').toLowerCase();
+                    const foto = item.url_foto || '';
+                    const rawFecha = item.fecha || item["fecha y hora"];
 
-            entry.innerHTML = `
-                <div class="content">${msg}</div>
-                ${imgHtml}
-                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
-            `;
-            feed.appendChild(entry);
-        });
+                    if (!msg && !foto) return;
 
-    } catch (e) {
-        console.error("Error Crítico:", e);
-        document.getElementById('feed').innerHTML = '<p style="text-align: center; color: red;">Error de sintonía: ' + e.message + '</p>';
-    }
-}
-    
+                    const entry = document.createElement('article');
+                    entry.className = 'entry';
+                    entry.setAttribute('data-category', canal);
+                    const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
+                    const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase() : '---';
+
+                    entry.innerHTML = `<div class="content">${msg}</div>${imgHtml}<span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>`;
+                    feed.appendChild(entry);
+                });
+            } catch (e) {
+                console.error("Error:", e);
+            }
+        }
+
+        function filter(cat) {
+            document.querySelectorAll('.entry').forEach(e => {
+                e.style.display = (cat === 'all' || e.dataset.category.includes(cat)) ? 'flex' : 'none';
+            });
+        }
+
+        // Llamamos a la función al cargar
+        loadBitacora();
+    </script>
 </body>
 </html>
