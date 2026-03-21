@@ -171,7 +171,7 @@
         const response = await fetch(finalURL);
         const rawText = await response.text();
         
-        // 1. Limpieza de residuos técnicos de Make
+        
         let cleanText = rawText.trim();
         if (cleanText.includes('__IMTAGGLENGTH__')) {
             const lastComma = cleanText.lastIndexOf(',');
