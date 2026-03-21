@@ -25,9 +25,8 @@
             color: var(--text-color);
             transition: background-color 1.2s ease, color 1.2s ease;
             overflow-x: hidden;
-        } /* <-- AQUÍ ESTABA EL ERROR: Faltaba esta llave */
-
-        /* Estilos del menú en modo oscuro */
+        } 
+        
         body.dark-mode .menu-content {
             background: rgba(22, 27, 34, 0.95);
             border: 1px solid rgba(148, 226, 213, 0.2);
@@ -165,49 +164,42 @@
             }
         }
 
-        async function loadBitacora() {
+       async function loadBitacora() {
     const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
         const rawText = await response.text();
         
-        // Limpieza de metadatos de Make (__IMTAGG)
+        // Limpiamos cualquier residuo técnico de Make si existe
         let cleanText = rawText.trim();
         if (cleanText.includes('__IMTAGGLENGTH__')) {
-            const lastIndex = cleanText.lastIndexOf(',');
-            if (lastIndex !== -1) cleanText = cleanText.substring(0, lastIndex) + "}";
+            const lastComma = cleanText.lastIndexOf(',');
+            cleanText = cleanText.substring(0, lastComma) + "}";
         }
 
         const json = JSON.parse(cleanText);
-        let data = [];
-
-        // --- EL TRUCO PARA TU JSON ESPECÍFICO ---
-        if (json.Array && Array.isArray(json.Array)) {
-            // Si el primer elemento es un texto que parece JSON, lo abrimos
-            if (typeof json.Array[0] === 'string' && json.Array[0].startsWith('{')) {
-                const innerJson = JSON.parse(json.Array[0]);
-                data = innerJson.array || innerJson;
-            } else {
-                data = json.Array;
-            }
-        } else {
-            data = Array.isArray(json) ? json : (json.array || [json]);
-        }
+        let data = json.Array || json.array || [];
 
         const feed = document.getElementById('feed');
         feed.innerHTML = ''; 
 
         data.forEach((item) => {
-            // Buscamos datos en cualquier formato (Airtable original o nuestro Make limpio)
-            const msg = item.mensaje || '';
-            const canal = (item.canal || 'S/N').toLowerCase();
-            const rawFecha = item.fecha || item["fecha y hora"] || item.fecha_y_hora;
+            // 1. Convertimos el texto con barras en un objeto real
+            let content;
+            try {
+                content = typeof item === 'string' ? JSON.parse(item) : item;
+            } catch(e) { return; }
+
+            const msg = content.mensaje || '';
+            const canal = (content.canal || 'S/N').toLowerCase();
+            const rawFecha = content.fecha || content["fecha y hora"];
             
-            // Buscamos la foto (url_foto o el objeto archivo de Airtable)
-            let foto = item.url_foto || '';
-            if (!foto && item.archivo && item.archivo[0]) {
-                foto = item.archivo[0].thumbnails?.large?.url || item.archivo[0].url;
+            // 2. Buscador de imagen (Extrae la URL de la estructura de Airtable)
+            let foto = '';
+            if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
+                // Priorizamos la versión 'large' para que se vea bien
+                foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
             }
 
             if (!msg && !foto) return;
@@ -228,8 +220,9 @@
             `;
             feed.appendChild(entry);
         });
+
     } catch (e) {
-        console.error("Error Lattice:", e);
+        console.error("Error en la Lattice:", e);
     }
 }
     </script>
