@@ -165,48 +165,73 @@
         }
 
        async function loadBitacora() {
-    // Usamos el RAW con un timestamp para saltar el caché de GitHub
     const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
-        const rawText = await response.text();
+        const json = await response.json();
         
-        // 1. Limpieza de basura técnica de Make (__IMTAGGLENGTH__)
-        let cleanText = rawText.trim();
-        if (cleanText.includes('__IMTAGGLENGTH__')) {
-            const lastIndex = cleanText.lastIndexOf(',');
-            if (lastIndex !== -1) cleanText = cleanText.substring(0, lastIndex) + "}";
-        }
-
-        const json = JSON.parse(cleanText);
+        // Obtener el array principal
+        let rawArray = json.Array || json.array || [];
         
-        // 2. Accedemos a la lista "Array" (que es como Make la llamó)
-        let data = json.Array || json.array || [];
-
-        const feed = document.getElementById('feed');
-        feed.innerHTML = ''; 
-
-        data.forEach((item) => {
-            // 3. EL TRUCO: Si el ítem es un texto con comillas \", lo convertimos a objeto real
-            let content;
-            try {
-                content = typeof item === 'string' ? JSON.parse(item) : item;
-            } catch(e) { return; } // Si falla, saltamos al siguiente
-
-            const msg = content.mensaje || '';
-            const canal = (content.canal || 'S/N').toLowerCase();
-            const rawFecha = content["fecha y hora"] || content.fecha;
-            
-            // 4. EXTRACTOR DE FOTOS: Buscamos la URL dentro de los thumbnails de Airtable
-            let foto = '';
-            if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                // Buscamos la versión 'large' para que no se vea pixelado
-                foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
+        // Si el primer elemento es un string que parece JSON, extraemos los datos
+        let items = [];
+        
+        if (rawArray.length > 0 && typeof rawArray[0] === 'string' && rawArray[0].startsWith('{')) {
+            // Caso 1: El array contiene strings JSON como primer elemento
+            for (let i = 0; i < rawArray.length; i++) {
+                try {
+                    if (typeof rawArray[i] === 'string' && rawArray[i].startsWith('{')) {
+                        const obj = JSON.parse(rawArray[i]);
+                        items.push(obj);
+                    }
+                } catch(e) {}
             }
-
+        } 
+        else if (rawArray.length > 0 && rawArray[0] && typeof rawArray[0] === 'object') {
+            // Caso 2: Ya son objetos directamente
+            items = rawArray;
+        }
+        
+        // Si no encontramos items, intentamos otra estructura
+        if (items.length === 0 && json.bitacora) {
+            // Estructura alternativa con bitacora
+            const bit = json.bitacora;
+            if (bit.mensaje && Array.isArray(bit.mensaje)) {
+                for (let i = 0; i < bit.mensaje.length; i++) {
+                    items.push({
+                        mensaje: bit.mensaje[i],
+                        canal: bit.canal?.[i],
+                        fecha: bit.fecha?.[i],
+                        archivo: bit.url_foto?.[i] ? [{url: bit.url_foto[i]}] : []
+                    });
+                }
+            }
+        }
+        
+        const feed = document.getElementById('feed');
+        feed.innerHTML = '';
+        
+        if (items.length === 0) {
+            feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">No hay datos disponibles</p>';
+            return;
+        }
+        
+        items.forEach((item) => {
+            const msg = item.mensaje || '';
+            const canal = (item.canal || 'S/N').toLowerCase();
+            const rawFecha = item["fecha y hora"] || item.fecha;
+            
+            // Extraer la foto
+            let foto = '';
+            if (item.archivo && Array.isArray(item.archivo) && item.archivo[0]) {
+                foto = item.archivo[0].thumbnails?.large?.url || 
+                       item.archivo[0].thumbnails?.full?.url || 
+                       item.archivo[0].url;
+            }
+            
             if (!msg && !foto) return;
-
+            
             const entry = document.createElement('article');
             entry.className = 'entry';
             entry.setAttribute('data-category', canal);
@@ -215,22 +240,20 @@
             const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { 
                 day:'2-digit', month:'short', year:'numeric' 
             }).toUpperCase() : '---';
-
+            
             entry.innerHTML = `
-                <div class="content">${msg}</div>
+                <div class="content">${msg.replace(/\n/g, '<br>')}</div>
                 ${imgHtml}
                 <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
             `;
             feed.appendChild(entry);
         });
-
+        
     } catch (e) {
         console.error("Error en la Lattice:", e);
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Error al cargar los datos</p>';
     }
 }
-
-// Llamamos a la función
-loadBitacora();
     </script>
 </body>
 </html>
