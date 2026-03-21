@@ -178,72 +178,48 @@ async function loadBitacora() {
     
     try {
         const response = await fetch(finalURL);
-        if (!response.ok) return;
-
         const rawText = await response.text();
-        
-        // LIMPIEZA DE BASURA DE MAKE (__IMTAGGLENGTH__)
+        console.log("1. Datos crudos recibidos:", rawText);
+
         let cleanText = rawText.trim();
+        // Limpieza de basura técnica de Make
         if (cleanText.includes('__IMTAGGLENGTH__')) {
-            const lastComma = cleanText.lastIndexOf(',');
-            if (lastComma !== -1) {
-                cleanText = cleanText.substring(0, lastComma) + "}";
-            }
+            cleanText = cleanText.substring(0, cleanText.lastIndexOf(',')) + "}";
         }
 
         const json = JSON.parse(cleanText);
-        let data = [];
+        console.log("2. JSON parseado correctamente:", json);
 
-        // --- BUSCADOR AGRESIVO DE DATOS ---
-        // Caso 1: Es una lista directa []
-        if (Array.isArray(json)) {
-            data = json;
-        } 
-        // Caso 2: Los datos están en .array o .Array
-        else if (json.array && Array.isArray(json.array)) {
-            data = json.array;
-        } 
-        else if (json.Array && Array.isArray(json.Array)) {
-            data = json.Array;
-        }
-        // Caso 3: Es un solo objeto {} (lo metemos en una lista de 1)
-        else if (typeof json === 'object' && json !== null) {
-            data = [json];
-        }
+        let data = [];
+        if (Array.isArray(json)) data = json;
+        else if (json.array || json.Array) data = json.array || json.Array;
+        else data = [json];
+
+        console.log("3. Lista de mensajes a procesar:", data);
 
         const feed = document.getElementById('feed');
-        if (!feed) return;
         feed.innerHTML = ''; 
 
-        data.forEach(item => {
-            // Buscamos mensaje y canal en cualquier formato
+        if (data.length === 0 || (data.length === 1 && !data[0].mensaje && !data[0].url_foto)) {
+            feed.innerHTML = '<p style="text-align: center; opacity: 0.5; margin-top: 50px;">La Lattice está vacía (Airtable no envió datos válidos).</p>';
+            return;
+        }
+
+        data.forEach((item, index) => {
+            // Buscamos los nombres exactos que pusiste en Make
             const msg = item.mensaje || '';
             const canal = (item.canal || 'S/N').toLowerCase();
-            
-            // Buscamos la fecha (soporta todos los nombres que hemos probado)
-            const rawFecha = item.fecha || item["fecha y hora"] || item.fecha_y_hora;
-            
-            // Buscamos la imagen (url_foto o el objeto archivo de Airtable)
-            let foto = item.url_foto || '';
-            if (!foto && item.archivo && Array.isArray(item.archivo) && item.archivo[0]) {
-                foto = item.archivo[0].thumbnails?.large?.url || item.archivo[0].url;
-            }
+            const foto = item.url_foto || '';
+            const rawFecha = item.fecha || item["fecha y hora"];
 
-            // Si no hay mensaje ni foto, no mostramos nada
-            if (!msg && !foto) return;
+            console.log(`Entry ${index}:`, { msg, canal, foto, rawFecha });
 
             const entry = document.createElement('article');
             entry.className = 'entry';
             entry.setAttribute('data-category', canal);
             
             const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
-            
-            let fechaDisplay = '---';
-            if (rawFecha) {
-                fechaDisplay = new Date(rawFecha).toLocaleDateString('es-CL', { 
-                    day:'2-digit', month:'short', year:'numeric' 
-                }).toUpperCase();
-            }
+            const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase() : '---';
 
             entry.innerHTML = `
                 <div class="content">${msg}</div>
@@ -254,10 +230,10 @@ async function loadBitacora() {
         });
 
     } catch (e) {
-        console.log("Reintentando sintonización...");
+        console.error("Error Crítico:", e);
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; color: red;">Error de sintonía: ' + e.message + '</p>';
     }
 }
-</script>
     
 </body>
 </html>
