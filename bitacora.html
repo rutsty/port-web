@@ -25,9 +25,9 @@
             color: var(--text-color);
             transition: background-color 1.2s ease, color 1.2s ease;
             overflow-x: hidden;
-        }
+        } /* <-- AQUÍ ESTABA EL ERROR: Faltaba esta llave */
 
-        /* --- CORRECCIÓN DE LLAVES AQUÍ --- */
+        /* Estilos del menú en modo oscuro */
         body.dark-mode .menu-content {
             background: rgba(22, 27, 34, 0.95);
             border: 1px solid rgba(148, 226, 213, 0.2);
@@ -171,12 +171,21 @@
                 const response = await fetch(finalURL);
                 const rawText = await response.text();
                 let cleanText = rawText.trim();
-                if (cleanText.includes('__IMTAGGLENGTH__')) {
-                    cleanText = cleanText.substring(0, cleanText.lastIndexOf(',')) + "}";
-                }
-                const json = JSON.parse(cleanText);
-                let data = Array.isArray(json) ? json : (json.array || json.Array || [json]);
                 
+                // Limpieza de basura técnica de Make
+                if (cleanText.includes('__IMTAGGLENGTH__')) {
+                    const lastComma = cleanText.lastIndexOf(',');
+                    if (lastComma !== -1) cleanText = cleanText.substring(0, lastComma) + "}";
+                }
+
+                const json = JSON.parse(cleanText);
+                
+                // Detector de lista flexible
+                let data = [];
+                if (Array.isArray(json)) data = json;
+                else if (json.array || json.Array) data = json.array || json.Array;
+                else data = [json];
+
                 const feed = document.getElementById('feed');
                 feed.innerHTML = ''; 
 
@@ -191,14 +200,19 @@
                     const entry = document.createElement('article');
                     entry.className = 'entry';
                     entry.setAttribute('data-category', canal);
+                    
                     const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
                     const fechaDisplay = rawFecha ? new Date(rawFecha).toLocaleDateString('es-CL', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase() : '---';
 
-                    entry.innerHTML = `<div class="content">${msg}</div>${imgHtml}<span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>`;
+                    entry.innerHTML = `
+                        <div class="content">${msg}</div>
+                        ${imgHtml}
+                        <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+                    `;
                     feed.appendChild(entry);
                 });
             } catch (e) {
-                console.error("Error:", e);
+                console.error("Error Lattice:", e);
             }
         }
 
@@ -208,7 +222,7 @@
             });
         }
 
-        // Llamamos a la función al cargar
+        // Llamamos a la función al cargar la página
         loadBitacora();
     </script>
 </body>
