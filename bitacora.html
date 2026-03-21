@@ -165,40 +165,43 @@
         }
 
        async function loadBitacora() {
-    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json' + Date.now();
+    // Usamos el RAW con un timestamp para saltar el caché de GitHub
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
     
     try {
         const response = await fetch(finalURL);
         const rawText = await response.text();
         
-        // Limpiamos cualquier residuo técnico de Make si existe
+        // 1. Limpieza de basura técnica de Make (__IMTAGGLENGTH__)
         let cleanText = rawText.trim();
         if (cleanText.includes('__IMTAGGLENGTH__')) {
-            const lastComma = cleanText.lastIndexOf(',');
-            cleanText = cleanText.substring(0, lastComma) + "}";
+            const lastIndex = cleanText.lastIndexOf(',');
+            if (lastIndex !== -1) cleanText = cleanText.substring(0, lastIndex) + "}";
         }
 
         const json = JSON.parse(cleanText);
+        
+        // 2. Accedemos a la lista "Array" (que es como Make la llamó)
         let data = json.Array || json.array || [];
 
         const feed = document.getElementById('feed');
         feed.innerHTML = ''; 
 
         data.forEach((item) => {
-            // 1. Convertimos el texto con barras en un objeto real
+            // 3. EL TRUCO: Si el ítem es un texto con comillas \", lo convertimos a objeto real
             let content;
             try {
                 content = typeof item === 'string' ? JSON.parse(item) : item;
-            } catch(e) { return; }
+            } catch(e) { return; } // Si falla, saltamos al siguiente
 
             const msg = content.mensaje || '';
             const canal = (content.canal || 'S/N').toLowerCase();
-            const rawFecha = content.fecha || content["fecha y hora"];
+            const rawFecha = content["fecha y hora"] || content.fecha;
             
-            // 2. Buscador de imagen (Extrae la URL de la estructura de Airtable)
+            // 4. EXTRACTOR DE FOTOS: Buscamos la URL dentro de los thumbnails de Airtable
             let foto = '';
             if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                // Priorizamos la versión 'large' para que se vea bien
+                // Buscamos la versión 'large' para que no se vea pixelado
                 foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
             }
 
@@ -225,6 +228,9 @@
         console.error("Error en la Lattice:", e);
     }
 }
+
+// Llamamos a la función
+loadBitacora();
     </script>
 </body>
 </html>
