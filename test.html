@@ -2,99 +2,290 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>🛰️ Test Sintonía Lattice v2.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⋆.˚ ☼⋆𓇼｡𖦹˙༄.° </title>
     <style>
-        body { font-family: monospace; background: #0a0a0a; color: #00ff41; padding: 20px; line-height: 1.4; }
-        #console { background: #000; border: 1px solid #00ff41; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,255,65,0.2); }
-        .error { color: #ff3e3e; }
-        .success { color: #00ff41; }
-        .info { color: #3eb4ff; }
-        pre { white-space: pre-wrap; word-wrap: break-word; font-size: 0.85em; opacity: 0.8; background: #111; padding: 10px; }
-        .test-img { max-width: 200px; border: 1px solid #00ff41; margin-top: 10px; display: block; }
-        .loading::after { content: '...'; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        :root { 
+            --bg-color: #fafafa; 
+            --text-color: #1a4a75; 
+            --entry-bg: #ffffff;
+            --accent: #5dade2;
+            --menu-bg: rgba(255, 255, 255, 0.9);
+            --border-subtle: rgba(128,128,128,0.08);
+        }
+
+        body.dark-mode { 
+            --bg-color: #0b0f19; 
+            --text-color: #94e2d5; 
+            --entry-bg: #161b22;
+            --menu-bg: rgba(22, 27, 34, 0.95);
+            --border-subtle: rgba(148, 226, 213, 0.1);
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 0;
+            color: var(--text-color);
+            transition: background-color 1.2s ease, color 1.2s ease;
+            overflow-x: hidden;
+        } 
+        
+        #theme-toggle {
+            position: fixed; top: 25px; left: 35px; z-index: 3000;
+            background: transparent; border: 1px solid var(--text-color);
+            color: var(--text-color); padding: 5px 15px; border-radius: 50px;
+            cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
+        }
+
+        .menu-container {
+            position: fixed; top: 25px; right: 35px; z-index: 3000;
+            text-align: right;
+        }
+        .menu-arrow { font-size: 1.5rem; cursor: pointer; opacity: 0.4; display: inline-block; transform: rotate(90deg); color: var(--text-color); }
+        .menu-content {
+            display: none; background: var(--menu-bg); 
+            backdrop-filter: blur(12px); border-radius: 12px; padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(128,128,128,0.2);
+        }
+        .menu-container:hover .menu-content { display: block; animation: fadeIn 0.3s ease; }
+        .menu-content button {
+            display: block; width: 100%; background: none; border: none;
+            padding: 10px 20px; text-align: right; cursor: pointer;
+            font-size: 0.8rem; letter-spacing: 2px; color: var(--text-color);
+            transition: 0.3s ease;
+        }
+        .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
+
+        header { padding: 15vh 0 8vh; text-align: center; }
+        h1 { 
+            font-weight: 700; 
+            letter-spacing: 12px; 
+            text-transform: uppercase; 
+            font-size: 1.4rem; 
+            opacity: 0.8; 
+            margin: 0;
+            transition: 0.5s ease;
+        }
+
+        /* ===== NUEVA ESTRUCTURA: GRID CON SUPERPOSICIÓN ===== */
+        #feed { 
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            padding: 20px;
+            max-width: 95vw;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
+
+        /* ===== ENTRADAS CON ROTACIÓN ALEATORIA Y MENOS CONTRASTE ===== */
+        .entry { 
+            background: var(--entry-bg); 
+            padding: 22px; 
+            border: 1px solid var(--border-subtle);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex; 
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(2px);
+            
+            /* Rotación sutil aleatoria */
+            transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
+            margin-bottom: 0;
+            
+            /* Sombra más integrada */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Rotaciones diferentes para cada entrada */
+        .entry:nth-child(odd) { --rot: -0.8deg; --y-offset: 2px; }
+        .entry:nth-child(even) { --rot: 0.6deg; --y-offset: -1px; }
+        .entry:nth-child(3n) { --rot: 1.2deg; --y-offset: 3px; }
+        .entry:nth-child(5n) { --rot: -1.1deg; --y-offset: -2px; }
+        .entry:nth-child(7n) { --rot: 0.3deg; --y-offset: 1px; }
+
+        /* Flotación suave */
+        .entry {
+            animation: gentleFloat 6s infinite ease-in-out;
+            animation-delay: calc(var(--order, 0) * 0.2s);
+        }
+        
+        @keyframes gentleFloat {
+            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 4px)); }
+        }
+
+        .entry:hover { 
+            transform: translateY(-8px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.3deg));
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
+            z-index: 100; 
+            border-color: var(--accent);
+        }
+
+        /* ===== EFECTO GLITCH EN EL TEXTO ===== */
+        .entry:hover .content {
+            text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
+            letter-spacing: 1.5px;
+            transition: 0.08s linear;
+        }
+
+        .content { 
+            font-family: 'Courier New', monospace; 
+            font-size: 1rem; 
+            line-height: 1.7; 
+            transition: 0.2s ease;
+        }
+        
+        .date { 
+            font-size: 0.65rem; 
+            opacity: 0.4; 
+            text-align: right; 
+            margin-top: 15px; 
+            font-family: 'Courier New', monospace; 
+        }
+        
+        .entry img { 
+            width: calc(100% + 44px); 
+            margin-left: -22px; 
+            margin-top: 12px; 
+            margin-bottom: -8px;
+            filter: saturate(0.7) contrast(0.95);
+            transition: 0.5s ease;
+            opacity: 0.9;
+        }
+        
+        .entry:hover img { 
+            filter: saturate(1.05) contrast(1.02);
+            opacity: 1;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <h1>LATTICE_TEST_v2.1</h1>
-    <div id="console">
-        <div id="status" class="loading">Iniciando protocolo de sintonía segura</div>
-        <hr style="border: 0.5px solid #00ff41; margin: 15px 0;">
-        <div id="output"></div>
+
+    <button id="theme-toggle" onclick="toggleDarkMode()">⋅˚.⋆☾⁺₊ ‧</button>
+
+    <div class="menu-container">
+        <div class="menu-arrow">➤</div>
+        <div class="menu-content">
+            <button onclick="filter('all')">VER TODO</button>
+            <button onclick="filter('referencias')">REFERENCIAS</button>
+            <button onclick="filter('pruebas-material')">MATERIAL</button>
+            <button onclick="filter('bitacora-diaria')">DIARIA</button>
+            <button onclick="filter('la-vida')">LA VIDA</button>
+        </div>
     </div>
 
-    <script>
-        const status = document.getElementById('status');
-        const output = document.getElementById('output');
+    <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
 
-        function log(msg, type = 'info') {
-            const div = document.createElement('div');
-            div.className = type;
-            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}`;
-            output.appendChild(div);
+    <main id="feed">
+        <p style="text-align: center; opacity: 0.5;">Iniciando sistema...</p>
+    </main>
+
+<script>
+    let audioCtx;
+    let isMusicPlaying = false;
+    const notes = [216, 256.8, 324, 384, 432]; 
+
+    function playPop() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+        g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playDreamMusic() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(isMusicPlaying) return;
+        isMusicPlaying = true;
+        setInterval(() => {
+            if(!document.body.classList.contains('dark-mode')) return;
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            const freq = notes[Math.floor(Math.random() * notes.length)];
+            osc.type = 'sine'; 
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            g.gain.setValueAtTime(0, audioCtx.currentTime);
+            g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
+            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 8);
+        }, 8000);
+    }
+
+    function toggleDarkMode() {
+        playPop();
+        document.body.classList.toggle('dark-mode');
+        if(document.body.classList.contains('dark-mode')) {
+            playDreamMusic();
         }
+    }
 
-        async function sintonizar() {
-            log("Llamando al puente de Vercel: /api/get-lattice", "info");
+    function filter(cat) {
+        playPop();
+        const entries = document.querySelectorAll('.entry');
+        entries.forEach(entry => {
+            const category = entry.getAttribute('data-category') || '';
+            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
+        });
+    }
 
-            try {
-                const response = await fetch('/api/get-lattice');
+    async function loadBitacora() {
+        const feed = document.getElementById('feed');
+        try {
+            const response = await fetch('/api/get-lattice');
+            const records = await response.json();
+            if (feed) feed.innerHTML = ''; 
+
+            records.forEach((record, index) => {
+                const f = record.fields;
+                const msg = f.mensaje || '';
+                const canal = (f.canal || 'S/N').toLowerCase();
+                const rawFecha = f["fecha y hora"];
                 
-                if (!response.ok) {
-                    throw new Error(`Error en el servidor Vercel: ${response.status}`);
+                let foto = '';
+                if (f.archivo && f.archivo[0]) {
+                    foto = f.archivo[0].thumbnails?.large?.url || f.archivo[0].url;
                 }
 
-                const data = await response.json();
-                const records = data.records || data;
+                if (!msg && !foto) return;
+
+                const entry = document.createElement('article');
+                entry.className = 'entry';
+                entry.setAttribute('data-category', canal);
+                entry.style.setProperty('--order', index);
                 
-                if (!Array.isArray(records) || records.length === 0) {
-                    throw new Error("Conexión exitosa pero Airtable no devolvió registros.");
+                const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
+                
+                let fechaDisplay = '---';
+                if (rawFecha) {
+                    const d = new Date(rawFecha);
+                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL').toUpperCase();
                 }
 
-                status.innerHTML = "✅ SINTONÍA ESTABLECIDA";
-                status.className = "success";
-                log(`Se han detectado ${records.length} registros.`, "success");
-
-                // --- VERIFICACIÓN DE INTEGRIDAD ---
-                const first = records[0].fields;
-                log("Analizando metadatos del primer registro...", "info");
-                
-                // Buscamos la foto real
-                const fotoUrl = first.archivo && first.archivo[0] ? first.archivo[0].thumbnails.large.url : null;
-                
-                // CORRECCIÓN: Usamos el nombre exacto de tu columna en Airtable
-                const fechaReal = first['fecha y hora'] || "CAMPO 'fecha y hora' NO ENCONTRADO";
-
-                const resumen = {
-                    mensaje: first.mensaje || "VACÍO",
-                    canal: first.canal || "VACÍO",
-                    fecha_detectada: fechaReal,
-                    foto_url: fotoUrl ? "URL_GENERADA" : "NO_HAY_FOTO"
-                };
-
-                const pre = document.createElement('pre');
-                pre.innerHTML = JSON.stringify(resumen, null, 2);
-                output.appendChild(pre);
-
-                // --- TEST VISUAL DE IMAGEN ---
-                if (fotoUrl) {
-                    log("Intentando renderizar miniatura de Airtable...", "success");
-                    const img = document.createElement('img');
-                    img.src = fotoUrl;
-                    img.className = 'test-img';
-                    output.appendChild(img);
-                } else {
-                    log("El primer registro no contiene archivos adjuntos para testear.", "info");
-                }
-
-            } catch (error) {
-                status.innerHTML = "❌ FALLO DE SINTONÍA";
-                status.className = "error";
-                log(error.message, "error");
-            }
+                entry.innerHTML = `
+                    <div class="content">${msg.replace(/\n/g, '<br>')}</div>
+                    ${imgHtml}
+                    <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+                `;
+                feed.appendChild(entry);
+            });
+        } catch (e) {
+            console.error(e);
+            feed.innerHTML = '<p style="text-align:center">Interferencia en la señal.</p>';
         }
-
-        sintonizar();
-    </script>
+    }
+    window.onload = loadBitacora;
+</script>
 </body>
 </html>
