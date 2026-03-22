@@ -58,6 +58,8 @@
         .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
 
         header { padding: 15vh 0 8vh; text-align: center; }
+        
+        /* ===== TÍTULO CON FLOTACIÓN Y GLITCH SUTIL ===== */
         h1 { 
             font-weight: 700; 
             letter-spacing: 12px; 
@@ -65,10 +67,45 @@
             font-size: 1.4rem; 
             opacity: 0.8; 
             margin: 0;
-            transition: 0.5s ease;
+            transition: all 0.3s ease;
+            display: inline-block;
+            animation: floatGlitch 5s infinite ease-in-out;
+            cursor: default;
+        }
+        
+        @keyframes floatGlitch {
+            0%, 100% { 
+                transform: translateY(0px); 
+                text-shadow: 0 0 0 transparent;
+            }
+            50% { 
+                transform: translateY(-4px); 
+                text-shadow: 
+                    1px 0 rgba(90, 160, 220, 0.2),
+                    -1px 0 rgba(220, 90, 160, 0.2);
+            }
+        }
+        
+        /* Glitch más pronunciado al hover */
+        h1:hover {
+            animation: glitchRipple 0.25s ease-in-out;
+            text-shadow: 
+                2px 0 rgba(90, 160, 220, 0.5),
+                -2px 0 rgba(220, 90, 160, 0.5);
+            letter-spacing: 14px;
+            transform: scale(1.01);
+        }
+        
+        @keyframes glitchRipple {
+            0% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
+            20% { transform: translateX(2px) scale(1.01); letter-spacing: 14px; }
+            40% { transform: translateX(-1px) scale(1.01); letter-spacing: 13px; }
+            60% { transform: translateX(1px) scale(1.01); letter-spacing: 14px; }
+            80% { transform: translateX(-0.5px) scale(1); letter-spacing: 12px; }
+            100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
         }
 
-        /* ===== NUEVA ESTRUCTURA: GRID CON SUPERPOSICIÓN ===== */
+        /* ===== GRID ===== */
         #feed { 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -82,10 +119,11 @@
         @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
 
-        /* ===== ENTRADAS CON ROTACIÓN ALEATORIA Y MENOS CONTRASTE ===== */
+        /* ===== ENTRADAS ===== */
         .entry { 
             background: var(--entry-bg); 
             padding: 22px; 
+            padding-top: 40px; /* espacio para la fecha en esquina */
             border: 1px solid var(--border-subtle);
             transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             display: flex; 
@@ -127,6 +165,22 @@
             border-color: var(--accent);
         }
 
+        /* ===== FECHA EN ESQUINA SUPERIOR DERECHA ===== */
+        .entry .date { 
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 0.65rem; 
+            opacity: 0.4; 
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .entry:hover .date {
+            opacity: 0.7;
+        }
+
         /* ===== EFECTO GLITCH EN EL TEXTO ===== */
         .entry:hover .content {
             text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
@@ -139,14 +193,6 @@
             font-size: 1rem; 
             line-height: 1.7; 
             transition: 0.2s ease;
-        }
-        
-        .date { 
-            font-size: 0.65rem; 
-            opacity: 0.4; 
-            text-align: right; 
-            margin-top: 15px; 
-            font-family: 'Courier New', monospace; 
         }
         
         .entry img { 
