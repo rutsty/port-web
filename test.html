@@ -2,27 +2,49 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Test Bitácora</title>
+    <title>Test Sintonía Airtable</title>
 </head>
 <body>
-    <h1>Test de carga</h1>
-    <div id="output">Cargando...</div>
+    <h1>🛰️ Test de carga: Airtable Directo</h1>
+    <div id="output">Cargando datos desde la base...</div>
 
     <script>
-        console.log("Script iniciado");
-        
-        const url = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Datos recibidos:", data);
-                document.getElementById('output').innerHTML = '<pre>' + JSON.stringify(data, null, 2).substring(0, 1000) + '</pre>';
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById('output').innerHTML = 'Error: ' + error.message;
-            });
+        // --- CONFIGURACIÓN ---
+        const baseId = 'appondFVTjAbYGUxP/tbl51JlRNS7Idj67j/viw9kUg0WhUFaBunY';      // Lo sacas de la URL de Airtable (empieza con app...)
+        const tableId = 'Bitacora'; // El nombre exacto de tu tabla (ej: Bitacora)
+        const token = '';      // El que empieza con pat... (el de solo lectura)
+
+        // Construimos la URL con orden descendente por fecha
+        const url = `https://api.airtable.com/v0/${baseId}/${tableId}?sort[0][field]=fecha&sort[0][direction]=desc`;
+
+        console.log("Iniciando conexión con Airtable...");
+
+        fetch(url, {
+            headers: { 
+                'Authorization': `Bearer ${token}` 
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error de conexión: " + response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Señal recibida:", data);
+            
+            // Mostramos los primeros 2000 caracteres del JSON crudo para verificar
+            const rawData = JSON.stringify(data, null, 2);
+            document.getElementById('output').innerHTML = `
+                <p style="color: green;">✅ ¡Sintonizado con éxito!</p>
+                <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd;">${rawData.substring(0, 2000)}</pre>
+            `;
+        })
+        .catch(error => {
+            console.error("Error en la Lattice:", error);
+            document.getElementById('output').innerHTML = `
+                <p style="color: red;">❌ Error de sintonía:</p>
+                <code>${error.message}</code>
+            `;
+        });
     </script>
 </body>
 </html>
