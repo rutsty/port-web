@@ -58,6 +58,8 @@
         .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
 
         header { padding: 15vh 0 8vh; text-align: center; }
+        
+        /* ===== TÍTULO FLOTANTE ===== */
         h1 { 
             font-weight: 700; 
             letter-spacing: 12px; 
@@ -66,23 +68,32 @@
             opacity: 0.8; 
             margin: 0;
             transition: 0.5s ease;
+            animation: floatTitle 4s infinite ease-in-out;
+            display: inline-block;
+            transform-origin: center;
+        }
+        
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; text-shadow: 0 0 0px transparent; }
+            50% { transform: translateY(-6px) scale(1.02); opacity: 0.95; text-shadow: 0 0 8px var(--accent); }
         }
 
-        /* ===== NUEVA ESTRUCTURA: GRID CON SUPERPOSICIÓN ===== */
+        /* ===== GRID FLEXIBLE ===== */
         #feed { 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
+            gap: 22px;
             padding: 20px;
             max-width: 95vw;
             margin: 0 auto;
+            align-items: start;  /* ← clave: cada entrada ocupa su altura natural */
         }
 
         @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
 
-        /* ===== ENTRADAS CON ROTACIÓN ALEATORIA Y MENOS CONTRASTE ===== */
+        /* ===== ENTRADAS CON ALTURA AUTOMÁTICA ===== */
         .entry { 
             background: var(--entry-bg); 
             padding: 22px; 
@@ -98,7 +109,10 @@
             transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
             margin-bottom: 0;
             
-            /* Sombra más integrada */
+            /* Altura automática */
+            height: auto;
+            min-height: 80px;
+            
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
@@ -112,12 +126,12 @@
         /* Flotación suave */
         .entry {
             animation: gentleFloat 6s infinite ease-in-out;
-            animation-delay: calc(var(--order, 0) * 0.2s);
+            animation-delay: calc(var(--order, 0) * 0.1s);
         }
         
         @keyframes gentleFloat {
             0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
-            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 4px)); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 5px)); }
         }
 
         .entry:hover { 
@@ -127,7 +141,7 @@
             border-color: var(--accent);
         }
 
-        /* ===== EFECTO GLITCH EN EL TEXTO ===== */
+        /* ===== EFECTO GLITCH ===== */
         .entry:hover .content {
             text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
             letter-spacing: 1.5px;
@@ -139,6 +153,7 @@
             font-size: 1rem; 
             line-height: 1.7; 
             transition: 0.2s ease;
+            word-break: break-word;
         }
         
         .date { 
@@ -182,7 +197,9 @@
         </div>
     </div>
 
-    <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
+    <header>
+        <h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1>
+    </header>
 
     <main id="feed">
         <p style="text-align: center; opacity: 0.5;">Iniciando sistema...</p>
