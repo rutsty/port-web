@@ -79,101 +79,88 @@
             50% { transform: translateY(-3px); }
         }
         
-        /* ===== EFECTO COMO AGUA AL PASAR EL MOUSE ===== */
+        /* ===== GLITCH SUTIL DEL TÍTULO (como suspiro) ===== */
         h1:hover {
-            animation: rippleGlitch 0.4s ease-in-out;
-            text-shadow: 
-                2px 0 rgba(90, 160, 220, 0.6),
-                -2px 0 rgba(220, 90, 160, 0.6),
-                0 2px rgba(160, 220, 90, 0.4);
-            letter-spacing: 14px;
-            transform: scale(1.02);
+            animation: softRipple 0.3s ease-in-out;
+            text-shadow: 1px 0 rgba(90, 160, 220, 0.3), -1px 0 rgba(220, 90, 160, 0.3);
+            letter-spacing: 13px;
+            transform: scale(1.01);
         }
         
-        @keyframes rippleGlitch {
+        @keyframes softRipple {
             0% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
-            20% { transform: translateX(3px) scale(1.01); letter-spacing: 14px; text-shadow: 3px 0 cyan, -2px 0 magenta; }
-            40% { transform: translateX(-2px) scale(1.01); letter-spacing: 13px; text-shadow: -2px 0 cyan, 3px 0 magenta; }
-            60% { transform: translateX(1px) scale(1.01); letter-spacing: 14px; }
-            80% { transform: translateX(-1px) scale(1); letter-spacing: 12px; }
+            25% { transform: translateX(1px) scale(1.005); letter-spacing: 13px; }
+            75% { transform: translateX(-1px) scale(1.005); letter-spacing: 13px; }
             100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
         }
 
-        /* ===== GRID COMPACTO (SIN ESPACIOS EN BLANCO) ===== */
+        /* ===== MASONRY (PINTEREST STYLE) ===== */
         #feed { 
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            column-count: 4;
+            column-gap: 20px;
             padding: 20px;
             max-width: 95vw;
             margin: 0 auto;
-            align-items: start;
         }
 
-        @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
+        @media (max-width: 1200px) { #feed { column-count: 3; } }
+        @media (max-width: 850px) { #feed { column-count: 2; } }
+        @media (max-width: 550px) { #feed { column-count: 1; } }
 
         /* ===== ENTRADAS ===== */
         .entry { 
+            break-inside: avoid;
+            margin-bottom: 20px;
             background: var(--entry-bg); 
             padding: 20px; 
             border: 1px solid var(--border-subtle);
             transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            display: flex; 
-            flex-direction: column;
+            display: inline-block;
+            width: 100%;
             position: relative;
-            z-index: 1;
             backdrop-filter: blur(2px);
             
             /* Rotación sutil */
             transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
-            margin-bottom: 0;
-            height: auto;
-            min-height: 60px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            
-            /* Asegurar que no queden espacios extra */
-            break-inside: avoid;
-            page-break-inside: avoid;
         }
 
-        /* Rotaciones más sutiles para evitar desorden visual */
-        .entry:nth-child(odd) { --rot: -0.4deg; --y-offset: 1px; }
-        .entry:nth-child(even) { --rot: 0.3deg; --y-offset: -0.5px; }
-        .entry:nth-child(3n) { --rot: 0.6deg; --y-offset: 1.5px; }
-        .entry:nth-child(5n) { --rot: -0.5deg; --y-offset: -1px; }
-        .entry:nth-child(7n) { --rot: 0.2deg; --y-offset: 0.5px; }
+        /* Rotaciones más suaves */
+        .entry:nth-child(odd) { --rot: -0.3deg; --y-offset: 1px; }
+        .entry:nth-child(even) { --rot: 0.2deg; --y-offset: -0.5px; }
+        .entry:nth-child(3n) { --rot: 0.4deg; --y-offset: 1px; }
+        .entry:nth-child(5n) { --rot: -0.4deg; --y-offset: -0.8px; }
+        .entry:nth-child(7n) { --rot: 0.1deg; --y-offset: 0.3px; }
 
         /* Flotación muy sutil */
         .entry {
             animation: gentleFloat 7s infinite ease-in-out;
-            animation-delay: calc(var(--order, 0) * 0.08s);
+            animation-delay: calc(var(--order, 0) * 0.06s);
         }
         
         @keyframes gentleFloat {
             0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
-            50% { transform: rotate(calc(var(--rot, 0deg) + 0.3deg)) translateY(calc(var(--y-offset, 0px) - 2px)); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 0.2deg)) translateY(calc(var(--y-offset, 0px) - 2px)); }
         }
 
         .entry:hover { 
-            transform: translateY(-4px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.2deg));
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.1deg));
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.08);
             z-index: 100; 
             border-color: var(--accent);
         }
 
-        /* ===== GLITCH EN TEXTO AL HOVER (como agua) ===== */
+        /* ===== GLITCH EN TEXTO (como agua) ===== */
         .entry:hover .content {
-            text-shadow: 1.5px 0 rgba(90, 160, 220, 0.5), -1.5px 0 rgba(220, 90, 160, 0.5);
-            letter-spacing: 1px;
+            text-shadow: 1px 0 rgba(90, 160, 220, 0.4), -1px 0 rgba(220, 90, 160, 0.4);
+            letter-spacing: 0.8px;
             transition: 0.08s linear;
         }
 
         .content { 
             font-family: 'Courier New', monospace; 
             font-size: 1rem; 
-            line-height: 1.65; 
+            line-height: 1.6; 
             transition: 0.2s ease;
             word-break: break-word;
         }
@@ -194,6 +181,7 @@
             filter: saturate(0.75) contrast(0.97);
             transition: 0.5s ease;
             opacity: 0.92;
+            display: block;
         }
         
         .entry:hover img { 
@@ -275,7 +263,7 @@
         const entries = document.querySelectorAll('.entry');
         entries.forEach(entry => {
             const category = entry.getAttribute('data-category') || '';
-            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
+            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'block' : 'none';
         });
     }
 
