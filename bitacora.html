@@ -122,7 +122,7 @@
     </main>
 
   <script>
-    let audioCtx;
+   let audioCtx;
     let isMusicPlaying = false;
     const notes = [216, 256.8, 324, 384, 432]; 
 
@@ -169,80 +169,73 @@
         const entries = document.querySelectorAll('.entry');
         entries.forEach(entry => {
             const category = entry.getAttribute('data-category') || '';
-            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
+            entry.style.display = (cat === 'all' || category === cat) ? 'flex' : 'none';
         });
     }
 
     async function loadBitacora() {
-    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
-    
-    try {
-        const response = await fetch(finalURL);
-        let rawText = await response.text();
-        
-        // Limpieza básica
-        let cleanText = rawText.trim();
-        const firstBracket = cleanText.indexOf('[');
-        const lastBracket = cleanText.lastIndexOf(']');
-        if (firstBracket !== -1 && lastBracket !== -1) {
-            cleanText = cleanText.substring(firstBracket, lastBracket + 1);
-        }
-
-        // AHORA: data es directamente el array
-        const data = JSON.parse(cleanText);
-
         const feed = document.getElementById('feed');
-        if (feed) feed.innerHTML = ''; 
+        
+        try {
+            // SINTONÍA: Llamada a tu API de Vercel
+            const response = await fetch('/api/get-lattice');
+            const records = await response.json();
 
-        if (!data || data.length === 0) {
-            feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">No hay datos disponibles</p>';
-            return;
+            if (feed) feed.innerHTML = ''; 
+
+            if (!records || records.length === 0) {
+                feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">Frecuencia vacía...</p>';
+                return;
+            }
+
+            records.forEach((record) => {
+                const f = record.fields; // Accedemos a los campos de Airtable
+                
+                const msg = f.mensaje || '';
+                const canal = (f.canal || 'S/N').toLowerCase();
+                const rawFecha = f["fecha y hora"]; // Nombre real en tu tabla
+                
+                // Extraer la foto optimizada
+                let foto = '';
+                if (f.archivo && f.archivo[0]) {
+                    foto = f.archivo[0].thumbnails?.large?.url || f.archivo[0].url;
+                }
+
+                if (!msg && !foto) return;
+
+                const entry = document.createElement('article');
+                entry.className = 'entry';
+                entry.setAttribute('data-category', canal);
+                
+                const imgHtml = foto ? `<img src="${foto}" loading="lazy" class="lattice-img" onerror="this.style.display='none'">` : '';
+                
+                // Formateo de fecha robusto
+                let fechaDisplay = '---';
+                if (rawFecha) {
+                    const d = new Date(rawFecha);
+                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
+                        day:'2-digit', month:'short', year:'numeric' 
+                    }).toUpperCase();
+                }
+
+                entry.innerHTML = `
+                    <div class="content">${msg.replace(/\n/g, '<br>')}</div>
+                    ${imgHtml}
+                    <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+                `;
+                if (feed) feed.appendChild(entry);
+            });
+
+            console.log("Lattice OS1 sintonizada.");
+
+        } catch (e) {
+            console.error("Lattice bloqueada:", e);
+            if (feed) feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">Interferencia en la señal...</p>';
         }
-
-        data.forEach((item) => {
-            const msg = item.mensaje || '';
-            const canal = (item.canal || 'S/N').toLowerCase();
-            const rawFecha = item["fecha y hora"] || item.fecha;
-            
-            // Extraer la foto
-            let foto = '';
-            if (item.archivo && Array.isArray(item.archivo) && item.archivo[0]) {
-                foto = item.archivo[0].thumbnails?.large?.url || 
-                       item.archivo[0].thumbnails?.full?.url || 
-                       item.archivo[0].url;
-            } else if (item.url_foto) {
-                foto = item.url_foto;
-            }
-
-            if (!msg && !foto) return;
-
-            const entry = document.createElement('article');
-            entry.className = 'entry';
-            entry.setAttribute('data-category', canal);
-            
-            const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
-            
-            let fechaDisplay = '---';
-            if (rawFecha) {
-                const d = new Date(rawFecha);
-                fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
-                    day:'2-digit', month:'short', year:'numeric' 
-                }).toUpperCase();
-            }
-
-            entry.innerHTML = `
-                <div class="content">${msg.replace(/\n/g, '<br>')}</div>
-                ${imgHtml}
-                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
-            `;
-            if (feed) feed.appendChild(entry);
-        });
-
-    } catch (e) {
-        console.error("Lattice bloqueada:", e);
-        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Error al cargar los datos</p>';
     }
-}
+
+    // Iniciar carga al cargar la página
+    window.onload = loadBitacora;
 </script>
 </body>
 </html>
