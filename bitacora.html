@@ -11,6 +11,7 @@
             --entry-bg: #ffffff;
             --accent: #5dade2;
             --menu-bg: rgba(255, 255, 255, 0.9);
+            --border-subtle: rgba(128,128,128,0.08);
         }
 
         body.dark-mode { 
@@ -18,6 +19,7 @@
             --text-color: #94e2d5; 
             --entry-bg: #161b22;
             --menu-bg: rgba(22, 27, 34, 0.95);
+            --border-subtle: rgba(148, 226, 213, 0.1);
         }
 
         body { 
@@ -29,7 +31,6 @@
             overflow-x: hidden;
         } 
         
-       
         #theme-toggle {
             position: fixed; top: 25px; left: 35px; z-index: 3000;
             background: transparent; border: 1px solid var(--text-color);
@@ -37,7 +38,6 @@
             cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
         }
 
-  
         .menu-container {
             position: fixed; top: 25px; right: 35px; z-index: 3000;
             text-align: right;
@@ -57,8 +57,9 @@
         }
         .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
 
-    
         header { padding: 15vh 0 8vh; text-align: center; }
+        
+        /* ===== TÍTULO CON FLOTACIÓN Y GLITCH SUTIL ===== */
         h1 { 
             font-weight: 700; 
             letter-spacing: 12px; 
@@ -66,48 +67,172 @@
             font-size: 1.4rem; 
             opacity: 0.8; 
             margin: 0;
-            transition: 0.5s ease;
+            transition: all 0.3s ease;
+            display: inline-block;
+            animation: floatGlitch 5s infinite ease-in-out;
+            cursor: default;
+        }
+        
+        @keyframes floatGlitch {
+            0%, 100% { 
+                transform: translateY(0px); 
+                text-shadow: 0 0 0 transparent;
+            }
+            50% { 
+                transform: translateY(-4px); 
+                text-shadow: 
+                    1px 0 rgba(90, 160, 220, 0.2),
+                    -1px 0 rgba(220, 90, 160, 0.2);
+            }
+        }
+        
+        /* Glitch más pronunciado al hover */
+        h1:hover {
+            animation: glitchRipple 0.25s ease-in-out;
+            text-shadow: 
+                2px 0 rgba(90, 160, 220, 0.5),
+                -2px 0 rgba(220, 90, 160, 0.5);
+            letter-spacing: 14px;
+            transform: scale(1.01);
+        }
+        
+        @keyframes glitchRipple {
+            0% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
+            20% { transform: translateX(2px) scale(1.01); letter-spacing: 14px; }
+            40% { transform: translateX(-1px) scale(1.01); letter-spacing: 13px; }
+            60% { transform: translateX(1px) scale(1.01); letter-spacing: 14px; }
+            80% { transform: translateX(-0.5px) scale(1); letter-spacing: 12px; }
+            100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
         }
 
- 
+        /* ===== GRID ===== */
         #feed { 
-            column-count: 4; column-gap: 20px;
-            padding: 20px; max-width: 95vw; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            padding: 20px;
+            max-width: 95vw;
+            margin: 0 auto;
         }
 
-        @media (max-width: 1200px) { #feed { column-count: 3; } }
-        @media (max-width: 850px) { #feed { column-count: 2; } }
-        @media (max-width: 550px) { #feed { column-count: 1; } }
+        @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
 
-
+        /* ===== ENTRADAS ===== */
         .entry { 
-            break-inside: avoid; margin-bottom: 25px;
-            background: var(--entry-bg); padding: 25px; 
-            border: 1px solid rgba(128,128,128,0.1);
-            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            display: flex; flex-direction: column;
+            background: var(--entry-bg); 
+            padding: 22px;
+            padding-bottom: 35px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex; 
+            flex-direction: column;
             position: relative;
             z-index: 1;
+            backdrop-filter: blur(2px);
+            
+            transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
+            margin-bottom: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Rotaciones diferentes para cada entrada */
+        .entry:nth-child(odd) { --rot: -0.8deg; --y-offset: 2px; }
+        .entry:nth-child(even) { --rot: 0.6deg; --y-offset: -1px; }
+        .entry:nth-child(3n) { --rot: 1.2deg; --y-offset: 3px; }
+        .entry:nth-child(5n) { --rot: -1.1deg; --y-offset: -2px; }
+        .entry:nth-child(7n) { --rot: 0.3deg; --y-offset: 1px; }
+
+        /* Flotación suave */
+        .entry {
+            animation: gentleFloat 6s infinite ease-in-out;
+            animation-delay: calc(var(--order, 0) * 0.2s);
+        }
+        
+        @keyframes gentleFloat {
+            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 4px)); }
         }
 
         .entry:hover { 
-            transform: translateY(-12px) scale(1.03); 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            transform: translateY(-8px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.3deg));
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
             z-index: 100; 
             border-color: var(--accent);
         }
 
-        .content { font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.7; }
-        .date { font-size: 0.65rem; opacity: 0.4; text-align: right; margin-top: 15px; font-family: 'Courier New', monospace; }
+        /* ===== FECHA EN ESQUINA INFERIOR DERECHA ===== */
+        .entry .date { 
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 0.65rem; 
+            opacity: 0.4; 
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .entry:hover .date {
+            opacity: 0.7;
+        }
+
+        /* ===== GLITCH MOMENTÁNEO: aparece y luego se estabiliza ===== */
+        .entry .content {
+            transition: all 0.2s ease;
+        }
+        
+        /* El glitch aparece solo al inicio del hover y luego se suaviza */
+        .entry:hover .content {
+            animation: glitchFlash 0.2s ease-in-out forwards;
+        }
+        
+        @keyframes glitchFlash {
+            0% {
+                text-shadow: none;
+                letter-spacing: normal;
+            }
+            20% {
+                text-shadow: 2px 0 rgba(255, 0, 0, 0.6), -2px 0 rgba(0, 0, 255, 0.6);
+                letter-spacing: 1.5px;
+            }
+            60% {
+                text-shadow: -1px 0 rgba(255, 0, 0, 0.4), 1px 0 rgba(0, 0, 255, 0.4);
+                letter-spacing: 0.8px;
+            }
+            100% {
+                text-shadow: 0.5px 0 rgba(255, 0, 0, 0.1), -0.5px 0 rgba(0, 0, 255, 0.1);
+                letter-spacing: 0.2px;
+            }
+        }
+        
+        /* Estado final estable después del glitch - lectura cómoda */
+        .entry:hover .content {
+            text-shadow: 0.5px 0 rgba(255, 0, 0, 0.05), -0.5px 0 rgba(0, 0, 255, 0.05);
+            letter-spacing: 0.2px;
+        }
+
+        .content { 
+            font-family: 'Courier New', monospace; 
+            font-size: 1rem; 
+            line-height: 1.7; 
+        }
         
         .entry img { 
-            width: calc(100% + 50px); 
-            margin-left: -25px; 
-            margin-top: 15px; 
-            filter: saturate(0.8);
-            transition: 0.4s ease;
+            width: calc(100% + 44px); 
+            margin-left: -22px; 
+            margin-top: 12px; 
+            margin-bottom: -8px;
+            filter: saturate(0.7) contrast(0.95);
+            transition: 0.5s ease;
+            opacity: 0.9;
         }
-        .entry:hover img { filter: saturate(1.1); }
+        
+        .entry:hover img { 
+            filter: saturate(1.05) contrast(1.02);
+            opacity: 1;
+        }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -192,7 +317,7 @@
             const records = await response.json();
             if (feed) feed.innerHTML = ''; 
 
-            records.forEach((record) => {
+            records.forEach((record, index) => {
                 const f = record.fields;
                 const msg = f.mensaje || '';
                 const canal = (f.canal || 'S/N').toLowerCase();
@@ -208,6 +333,7 @@
                 const entry = document.createElement('article');
                 entry.className = 'entry';
                 entry.setAttribute('data-category', canal);
+                entry.style.setProperty('--order', index);
                 
                 const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
                 
