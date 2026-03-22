@@ -57,9 +57,9 @@
         }
         .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
 
-        header { padding: 12vh 0 6vh; text-align: center; }
+        header { padding: 15vh 0 8vh; text-align: center; }
         
-        /* ===== TÍTULO CON FLOTACIÓN SUTIL ===== */
+        /* ===== TÍTULO FLOTANTE ===== */
         h1 { 
             font-weight: 700; 
             letter-spacing: 12px; 
@@ -67,57 +67,36 @@
             font-size: 1.4rem; 
             opacity: 0.8; 
             margin: 0;
-            transition: all 0.3s ease;
+            transition: 0.5s ease;
+            animation: floatTitle 4s infinite ease-in-out;
             display: inline-block;
             transform-origin: center;
-            animation: subtleFloat 5s infinite ease-in-out;
-            cursor: default;
         }
         
-        @keyframes subtleFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        /* ===== EFECTO COMO AGUA AL PASAR EL MOUSE ===== */
-        h1:hover {
-            animation: rippleGlitch 0.4s ease-in-out;
-            text-shadow: 
-                2px 0 rgba(90, 160, 220, 0.6),
-                -2px 0 rgba(220, 90, 160, 0.6),
-                0 2px rgba(160, 220, 90, 0.4);
-            letter-spacing: 14px;
-            transform: scale(1.02);
-        }
-        
-        @keyframes rippleGlitch {
-            0% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
-            20% { transform: translateX(3px) scale(1.01); letter-spacing: 14px; text-shadow: 3px 0 cyan, -2px 0 magenta; }
-            40% { transform: translateX(-2px) scale(1.01); letter-spacing: 13px; text-shadow: -2px 0 cyan, 3px 0 magenta; }
-            60% { transform: translateX(1px) scale(1.01); letter-spacing: 14px; }
-            80% { transform: translateX(-1px) scale(1); letter-spacing: 12px; }
-            100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; text-shadow: 0 0 0px transparent; }
+            50% { transform: translateY(-6px) scale(1.02); opacity: 0.95; text-shadow: 0 0 8px var(--accent); }
         }
 
-        /* ===== GRID COMPACTO (SIN ESPACIOS EN BLANCO) ===== */
+        /* ===== GRID FLEXIBLE ===== */
         #feed { 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 22px;
             padding: 20px;
             max-width: 95vw;
             margin: 0 auto;
-            align-items: start;
+            align-items: start;  /* ← clave: cada entrada ocupa su altura natural */
         }
 
         @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
 
-        /* ===== ENTRADAS ===== */
+        /* ===== ENTRADAS CON ALTURA AUTOMÁTICA ===== */
         .entry { 
             background: var(--entry-bg); 
-            padding: 20px; 
+            padding: 22px; 
             border: 1px solid var(--border-subtle);
             transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             display: flex; 
@@ -126,54 +105,53 @@
             z-index: 1;
             backdrop-filter: blur(2px);
             
-            /* Rotación sutil */
+            /* Rotación sutil aleatoria */
             transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
             margin-bottom: 0;
-            height: auto;
-            min-height: 60px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             
-            /* Asegurar que no queden espacios extra */
-            break-inside: avoid;
-            page-break-inside: avoid;
+            /* Altura automática */
+            height: auto;
+            min-height: 80px;
+            
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
-        /* Rotaciones más sutiles para evitar desorden visual */
-        .entry:nth-child(odd) { --rot: -0.4deg; --y-offset: 1px; }
-        .entry:nth-child(even) { --rot: 0.3deg; --y-offset: -0.5px; }
-        .entry:nth-child(3n) { --rot: 0.6deg; --y-offset: 1.5px; }
-        .entry:nth-child(5n) { --rot: -0.5deg; --y-offset: -1px; }
-        .entry:nth-child(7n) { --rot: 0.2deg; --y-offset: 0.5px; }
+        /* Rotaciones diferentes para cada entrada */
+        .entry:nth-child(odd) { --rot: -0.8deg; --y-offset: 2px; }
+        .entry:nth-child(even) { --rot: 0.6deg; --y-offset: -1px; }
+        .entry:nth-child(3n) { --rot: 1.2deg; --y-offset: 3px; }
+        .entry:nth-child(5n) { --rot: -1.1deg; --y-offset: -2px; }
+        .entry:nth-child(7n) { --rot: 0.3deg; --y-offset: 1px; }
 
-        /* Flotación muy sutil */
+        /* Flotación suave */
         .entry {
-            animation: gentleFloat 7s infinite ease-in-out;
-            animation-delay: calc(var(--order, 0) * 0.08s);
+            animation: gentleFloat 6s infinite ease-in-out;
+            animation-delay: calc(var(--order, 0) * 0.1s);
         }
         
         @keyframes gentleFloat {
             0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
-            50% { transform: rotate(calc(var(--rot, 0deg) + 0.3deg)) translateY(calc(var(--y-offset, 0px) - 2px)); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 5px)); }
         }
 
         .entry:hover { 
-            transform: translateY(-4px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.2deg));
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.3deg));
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
             z-index: 100; 
             border-color: var(--accent);
         }
 
-        /* ===== GLITCH EN TEXTO AL HOVER (como agua) ===== */
+        /* ===== EFECTO GLITCH ===== */
         .entry:hover .content {
-            text-shadow: 1.5px 0 rgba(90, 160, 220, 0.5), -1.5px 0 rgba(220, 90, 160, 0.5);
-            letter-spacing: 1px;
+            text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
+            letter-spacing: 1.5px;
             transition: 0.08s linear;
         }
 
         .content { 
             font-family: 'Courier New', monospace; 
             font-size: 1rem; 
-            line-height: 1.65; 
+            line-height: 1.7; 
             transition: 0.2s ease;
             word-break: break-word;
         }
@@ -182,26 +160,26 @@
             font-size: 0.65rem; 
             opacity: 0.4; 
             text-align: right; 
-            margin-top: 12px; 
+            margin-top: 15px; 
             font-family: 'Courier New', monospace; 
         }
         
         .entry img { 
-            width: calc(100% + 40px); 
-            margin-left: -20px; 
-            margin-top: 10px; 
-            margin-bottom: -6px;
-            filter: saturate(0.75) contrast(0.97);
+            width: calc(100% + 44px); 
+            margin-left: -22px; 
+            margin-top: 12px; 
+            margin-bottom: -8px;
+            filter: saturate(0.7) contrast(0.95);
             transition: 0.5s ease;
-            opacity: 0.92;
+            opacity: 0.9;
         }
         
         .entry:hover img { 
-            filter: saturate(1.02) contrast(1.01);
+            filter: saturate(1.05) contrast(1.02);
             opacity: 1;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
