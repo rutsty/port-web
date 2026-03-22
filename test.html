@@ -123,7 +123,7 @@
         .entry { 
             background: var(--entry-bg); 
             padding: 22px;
-            padding-bottom: 35px; /* espacio para la fecha en esquina inferior */
+            padding-bottom: 35px;
             border: 1px solid var(--border-subtle);
             transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             display: flex; 
@@ -132,11 +132,8 @@
             z-index: 1;
             backdrop-filter: blur(2px);
             
-            /* Rotación sutil aleatoria */
             transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
             margin-bottom: 0;
-            
-            /* Sombra más integrada */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
@@ -181,18 +178,45 @@
             opacity: 0.7;
         }
 
-        /* ===== EFECTO GLITCH EN EL TEXTO ===== */
+        /* ===== GLITCH MOMENTÁNEO: aparece y luego se estabiliza ===== */
+        .entry .content {
+            transition: all 0.2s ease;
+        }
+        
+        /* El glitch aparece solo al inicio del hover y luego se suaviza */
         .entry:hover .content {
-            text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
-            letter-spacing: 1.5px;
-            transition: 0.08s linear;
+            animation: glitchFlash 0.2s ease-in-out forwards;
+        }
+        
+        @keyframes glitchFlash {
+            0% {
+                text-shadow: none;
+                letter-spacing: normal;
+            }
+            20% {
+                text-shadow: 2px 0 rgba(255, 0, 0, 0.6), -2px 0 rgba(0, 0, 255, 0.6);
+                letter-spacing: 1.5px;
+            }
+            60% {
+                text-shadow: -1px 0 rgba(255, 0, 0, 0.4), 1px 0 rgba(0, 0, 255, 0.4);
+                letter-spacing: 0.8px;
+            }
+            100% {
+                text-shadow: 0.5px 0 rgba(255, 0, 0, 0.1), -0.5px 0 rgba(0, 0, 255, 0.1);
+                letter-spacing: 0.2px;
+            }
+        }
+        
+        /* Estado final estable después del glitch - lectura cómoda */
+        .entry:hover .content {
+            text-shadow: 0.5px 0 rgba(255, 0, 0, 0.05), -0.5px 0 rgba(0, 0, 255, 0.05);
+            letter-spacing: 0.2px;
         }
 
         .content { 
             font-family: 'Courier New', monospace; 
             font-size: 1rem; 
             line-height: 1.7; 
-            transition: 0.2s ease;
         }
         
         .entry img { 
