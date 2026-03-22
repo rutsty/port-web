@@ -33,58 +33,43 @@
             output.appendChild(div);
         }
 
-        async function sintonizar() {
-            log("Llamando al puente de Vercel: /api/get-lattice", "info");
+        async function loadTest() {
+    try {
+        const response = await fetch('/api/get-lattice');
+        const records = await response.json();
+        
+        const output = document.getElementById('output');
+        output.innerHTML = ''; // Limpiamos el "Cargando..."
 
-            try {
-                // LLAMADA A LA API INTERNA
-                const response = await fetch('/api/get-lattice');
-                
-                if (response.status === 404) {
-                    throw new Error("El archivo /api/get-lattice.js no fue encontrado. ¿Subiste la carpeta 'api'?");
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`Error en el servidor Vercel: ${response.status} ${response.statusText}`);
-                }
+        records.forEach(record => {
+            const f = record.fields;
+            const entry = document.createElement('div');
+            
+            // Estilo básico para diferenciar los canales
+            entry.style.borderLeft = "5px solid #00ff41";
+            entry.style.margin = "15px 0";
+            entry.style.padding = "10px";
+            entry.style.background = "#1a1a1a";
 
-                const data = await response.json();
-                
-                // VALIDACIÓN DE DATOS
-                const records = data.records || data; // Maneja ambos formatos (completo o solo records)
-                
-                if (!Array.isArray(records) || records.length === 0) {
-                    throw new Error("Conexión exitosa pero no se encontraron registros en Airtable.");
-                }
+            // Buscamos la foto en tu columna 'archivo'
+            const foto = f.archivo?.[0]?.thumbnails?.large?.url || '';
 
-                status.innerHTML = "✅ SINTONÍA ESTABLECIDA";
-                status.className = "success";
-                log(`Se han detectado ${records.length} registros en la frecuencia.`, "success");
+            entry.innerHTML = `
+                <small style="color: #888;"># CANAL: ${f.canal || 'SIN CANAL'}</small>
+                <p style="font-size: 1.2em; margin: 5px 0;">${f.mensaje || '<em>Sin mensaje</em>'}</p>
+                ${foto ? `<img src="${foto}" style="max-width: 100%; border: 1px solid #333;">` : ''}
+                <br>
+                <small style="color: #444;">ID: ${f.id} | ${f['fecha y hora'] || ''}</small>
+            `;
+            output.appendChild(entry);
+        });
 
-                // MUESTRA DEL PRIMER REGISTRO COMO PRUEBA
-                const first = records[0].fields;
-                log("Verificando integridad del primer registro...", "info");
-                
-                const resumen = {
-                    mensaje: first.mensaje || "VACÍO",
-                    canal: first.canal || "VACÍO",
-                    tiene_foto: first.archivo && first.archivo[0] ? "SÍ" : "NO",
-                    fecha: first.fecha || "VACÍO"
-                };
-
-                const pre = document.createElement('pre');
-                pre.innerHTML = JSON.stringify(resumen, null, 2);
-                output.appendChild(pre);
-
-            } catch (error) {
-                status.innerHTML = "❌ FALLO DE SINTONÍA";
-                status.className = "error";
-                log(error.message, "error");
-                log("Sugerencia: Revisa que AIRTABLE_TOKEN esté en Settings > Environment Variables de Vercel.", "info");
-            }
-        }
-
-        sintonizar();
+    } catch (e) {
+        console.error("Fallo de sintonía:", e);
+        document.getElementById('output').innerHTML = "❌ Error al conectar con la API.";
+    }
+}
+loadTest();
     </script>
 </body>
 </html>
