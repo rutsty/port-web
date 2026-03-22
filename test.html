@@ -79,7 +79,7 @@
             50% { transform: translateY(-3px); }
         }
         
-        /* ===== GLITCH SUTIL DEL TÍTULO (como suspiro) ===== */
+        /* ===== GLITCH SUTIL DEL TÍTULO ===== */
         h1:hover {
             animation: softRipple 0.3s ease-in-out;
             text-shadow: 1px 0 rgba(90, 160, 220, 0.3), -1px 0 rgba(220, 90, 160, 0.3);
@@ -94,10 +94,10 @@
             100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
         }
 
-        /* ===== MASONRY (PINTEREST STYLE) ===== */
+        /* ===== MASONRY ESTILO PINTEREST (sin superposición) ===== */
         #feed { 
             column-count: 4;
-            column-gap: 20px;
+            column-gap: 24px;
             padding: 20px;
             max-width: 95vw;
             margin: 0 auto;
@@ -109,8 +109,8 @@
 
         /* ===== ENTRADAS ===== */
         .entry { 
-            break-inside: avoid;
-            margin-bottom: 20px;
+            break-inside: avoid;  /* ← clave: evita que se rompan entre columnas */
+            margin-bottom: 24px;
             background: var(--entry-bg); 
             padding: 20px; 
             border: 1px solid var(--border-subtle);
@@ -123,9 +123,12 @@
             /* Rotación sutil */
             transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            
+            /* Asegurar que el contenido fluya naturalmente */
+            box-sizing: border-box;
         }
 
-        /* Rotaciones más suaves */
+        /* Rotaciones suaves */
         .entry:nth-child(odd) { --rot: -0.3deg; --y-offset: 1px; }
         .entry:nth-child(even) { --rot: 0.2deg; --y-offset: -0.5px; }
         .entry:nth-child(3n) { --rot: 0.4deg; --y-offset: 1px; }
@@ -150,7 +153,7 @@
             border-color: var(--accent);
         }
 
-        /* ===== GLITCH EN TEXTO (como agua) ===== */
+        /* ===== GLITCH EN TEXTO ===== */
         .entry:hover .content {
             text-shadow: 1px 0 rgba(90, 160, 220, 0.4), -1px 0 rgba(220, 90, 160, 0.4);
             letter-spacing: 0.8px;
@@ -174,14 +177,14 @@
         }
         
         .entry img { 
-            width: calc(100% + 40px); 
-            margin-left: -20px; 
-            margin-top: 10px; 
-            margin-bottom: -6px;
+            width: 100%; 
+            margin-top: 12px; 
+            margin-bottom: -4px;
             filter: saturate(0.75) contrast(0.97);
             transition: 0.5s ease;
             opacity: 0.92;
             display: block;
+            border-radius: 2px;
         }
         
         .entry:hover img { 
