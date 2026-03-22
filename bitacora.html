@@ -10,12 +10,14 @@
             --text-color: #1a4a75; 
             --entry-bg: #ffffff;
             --accent: #5dade2;
+            --menu-bg: rgba(255, 255, 255, 0.9);
         }
 
         body.dark-mode { 
             --bg-color: #0b0f19; 
             --text-color: #94e2d5; 
             --entry-bg: #161b22;
+            --menu-bg: rgba(22, 27, 34, 0.95);
         }
 
         body { 
@@ -27,80 +29,87 @@
             overflow-x: hidden;
         } 
         
+        /* BOTÓN THEME */
         #theme-toggle {
-            position: fixed; top: 25px; left: 35px; z-index: 2000;
+            position: fixed; top: 25px; left: 35px; z-index: 3000;
             background: transparent; border: 1px solid var(--text-color);
             color: var(--text-color); padding: 5px 15px; border-radius: 50px;
             cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
-            opacity: 0.6;
         }
 
+        /* MENÚ */
         .menu-container {
-            position: fixed; top: 25px; right: 35px; z-index: 2000;
+            position: fixed; top: 25px; right: 35px; z-index: 3000;
             text-align: right;
         }
-        .menu-arrow { font-size: 1.5rem; cursor: pointer; opacity: 0.4; transform: rotate(90deg); }
+        .menu-arrow { font-size: 1.5rem; cursor: pointer; opacity: 0.4; display: inline-block; transform: rotate(90deg); color: var(--text-color); }
         .menu-content {
-            display: none; background: rgba(255, 255, 255, 0.9); 
+            display: none; background: var(--menu-bg); 
             backdrop-filter: blur(12px); border-radius: 12px; padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(128,128,128,0.2);
         }
-        .menu-container:hover .menu-content { display: block; }
+        .menu-container:hover .menu-content { display: block; animation: fadeIn 0.3s ease; }
         .menu-content button {
             display: block; width: 100%; background: none; border: none;
             padding: 10px 20px; text-align: right; cursor: pointer;
-            font-size: 0.8rem; letter-spacing: 2px; color: inherit;
+            font-size: 0.8rem; letter-spacing: 2px; color: var(--text-color);
+            transition: 0.3s ease;
+        }
+        .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
+
+        /* TÍTULO AGRANDADO */
+        header { padding: 15vh 0 8vh; text-align: center; }
+        h1 { 
+            font-weight: 700; 
+            letter-spacing: 12px; 
+            text-transform: uppercase; 
+            font-size: 1.4rem; 
+            opacity: 0.8; 
+            margin: 0;
+            transition: 0.5s ease;
         }
 
-        header { padding: 12vh 0 6vh; text-align: center; }
-        h1 { font-weight: 700; letter-spacing: 6px; text-transform: uppercase; font-size: 0.85rem; opacity: 0.6; }
-
-        /* EL FEED: Ahora con un estilo más orgánico */
+        /* FEED MASONRY */
         #feed { 
-            column-count: 4; column-gap: 30px;
-            padding: 40px; max-width: 95vw; margin: 0 auto;
+            column-count: 4; column-gap: 20px;
+            padding: 20px; max-width: 95vw; margin: 0 auto;
         }
 
         @media (max-width: 1200px) { #feed { column-count: 3; } }
         @media (max-width: 850px) { #feed { column-count: 2; } }
         @media (max-width: 550px) { #feed { column-count: 1; } }
 
-        /* ARREGLO DE LA CLASE .ENTRY */
+        /* POSTS (DERECHOS PERO CON EFECTO) */
         .entry { 
-            break-inside: avoid; margin-bottom: 40px;
+            break-inside: avoid; margin-bottom: 25px;
             background: var(--entry-bg); padding: 25px; 
-            border: 1px solid rgba(0,0,0,0.08);
-            box-shadow: 2px 2px 15px rgba(0,0,0,0.05);
-            transition: all 0.4s ease;
+            border: 1px solid rgba(128,128,128,0.1);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex; flex-direction: column;
             position: relative;
-            /* Efecto sutil de rotación para el look collage */
-            transform: rotate(calc(var(--rotation, 0deg)));
+            z-index: 1;
         }
-
-        /* Rotaciones aleatorias automáticas (opcional pero le da el toque) */
-        .entry:nth-child(even) { --rotation: -1.2deg; }
-        .entry:nth-child(odd) { --rotation: 1.1deg; }
 
         .entry:hover { 
-            transform: translateY(-10px) rotate(0deg) scale(1.02); 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-            z-index: 10;
+            transform: translateY(-12px) scale(1.03); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            z-index: 100; /* Salta al frente de todos */
+            border-color: var(--accent);
         }
 
-        .content { font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; }
-        .date { font-size: 0.6rem; opacity: 0.4; text-align: right; margin-top: 15px; letter-spacing: 1px; }
+        .content { font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.7; }
+        .date { font-size: 0.65rem; opacity: 0.4; text-align: right; margin-top: 15px; font-family: 'Courier New', monospace; }
         
-        /* IMÁGENES DENTRO DE LA TARJETA */
         .entry img { 
             width: calc(100% + 50px); 
             margin-left: -25px; 
             margin-top: 15px; 
-            filter: saturate(0.85);
-            transition: filter 0.3s ease;
+            filter: saturate(0.8);
+            transition: 0.4s ease;
         }
         .entry:hover img { filter: saturate(1.1); }
 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -112,8 +121,8 @@
         <div class="menu-content">
             <button onclick="filter('all')">VER TODO</button>
             <button onclick="filter('referencias')">REFERENCIAS</button>
-            <button onclick="filter('pruebas-material')">PRUEBAS MATERIAL</button>
-            <button onclick="filter('bitacora-diaria')">BITÁCORA DIARIA</button>
+            <button onclick="filter('pruebas-material')">MATERIAL</button>
+            <button onclick="filter('bitacora-diaria')">DIARIA</button>
             <button onclick="filter('la-vida')">LA VIDA</button>
         </div>
     </div>
@@ -121,7 +130,7 @@
     <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
 
     <main id="feed">
-        <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice...</p>
+        <p style="text-align: center; opacity: 0.5;">Iniciando sistema...</p>
     </main>
 
 <script>
@@ -140,9 +149,31 @@
         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
     }
 
+    function playDreamMusic() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(isMusicPlaying) return;
+        isMusicPlaying = true;
+        setInterval(() => {
+            if(!document.body.classList.contains('dark-mode')) return;
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            const freq = notes[Math.floor(Math.random() * notes.length)];
+            osc.type = 'sine'; 
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            g.gain.setValueAtTime(0, audioCtx.currentTime);
+            g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
+            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 8);
+        }, 8000);
+    }
+
     function toggleDarkMode() {
         playPop();
         document.body.classList.toggle('dark-mode');
+        if(document.body.classList.contains('dark-mode')) {
+            playDreamMusic();
+        }
     }
 
     function filter(cat) {
@@ -150,12 +181,7 @@
         const entries = document.querySelectorAll('.entry');
         entries.forEach(entry => {
             const category = entry.getAttribute('data-category') || '';
-            // Ajuste para que coincida con tus nombres de Discord
-            if (cat === 'all' || category.includes(cat)) {
-                entry.style.display = 'flex';
-            } else {
-                entry.style.display = 'none';
-            }
+            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
         });
     }
 
@@ -200,7 +226,7 @@
             });
         } catch (e) {
             console.error(e);
-            feed.innerHTML = 'Error en la sintonía.';
+            feed.innerHTML = '<p style="text-align:center">Interferencia en la señal.</p>';
         }
     }
     window.onload = loadBitacora;
