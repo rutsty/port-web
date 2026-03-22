@@ -27,15 +27,6 @@
             overflow-x: hidden;
         } 
         
-        body.dark-mode .menu-content {
-            background: rgba(22, 27, 34, 0.95);
-            border: 1px solid rgba(148, 226, 213, 0.2);
-        }
-
-        body.dark-mode .menu-content button {
-            color: #94e2d5;
-        }
-
         #theme-toggle {
             position: fixed; top: 25px; left: 35px; z-index: 2000;
             background: transparent; border: 1px solid var(--text-color);
@@ -43,71 +34,73 @@
             cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
             opacity: 0.6;
         }
-        #theme-toggle:hover { opacity: 1; box-shadow: 0 0 10px var(--accent); }
 
         .menu-container {
             position: fixed; top: 25px; right: 35px; z-index: 2000;
             text-align: right;
         }
-        .menu-arrow {
-            font-size: 1.5rem; cursor: pointer; opacity: 0.4; transition: 0.3s;
-            display: inline-block; transform: rotate(90deg);
-        }
-        .menu-arrow:hover { opacity: 1; color: var(--accent); }
-
+        .menu-arrow { font-size: 1.5rem; cursor: pointer; opacity: 0.4; transform: rotate(90deg); }
         .menu-content {
             display: none; background: rgba(255, 255, 255, 0.9); 
             backdrop-filter: blur(12px); border-radius: 12px; padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-top: 10px;
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.05);
         }
-        .menu-container:hover .menu-content { display: block; animation: fadeIn 0.3s ease; }
-
+        .menu-container:hover .menu-content { display: block; }
         .menu-content button {
             display: block; width: 100%; background: none; border: none;
             padding: 10px 20px; text-align: right; cursor: pointer;
-            font-size: 0.8rem; letter-spacing: 2px; color: #1a4a75;
-            transition: 0.3s ease; 
+            font-size: 0.8rem; letter-spacing: 2px; color: inherit;
         }
-        .menu-content button:hover { color: var(--accent); transform: translateX(-10px); }
 
         header { padding: 12vh 0 6vh; text-align: center; }
         h1 { font-weight: 700; letter-spacing: 6px; text-transform: uppercase; font-size: 0.85rem; opacity: 0.6; }
 
+        /* EL FEED: Ahora con un estilo más orgánico */
         #feed { 
-            column-count: 4; column-gap: 25px;
-            padding: 20px; max-width: 98vw; margin: 0 auto;
+            column-count: 4; column-gap: 30px;
+            padding: 40px; max-width: 95vw; margin: 0 auto;
         }
 
         @media (max-width: 1200px) { #feed { column-count: 3; } }
         @media (max-width: 850px) { #feed { column-count: 2; } }
         @media (max-width: 550px) { #feed { column-count: 1; } }
 
-        . { 
-            break-inside: avoid; margin-bottom: 30px;
-            background: var(---bg); padding: 25px; 
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        /* ARREGLO DE LA CLASE .ENTRY */
+        .entry { 
+            break-inside: avoid; margin-bottom: 40px;
+            background: var(--entry-bg); padding: 25px; 
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
             display: flex; flex-direction: column;
             position: relative;
+            /* Efecto sutil de rotación para el look collage */
+            transform: rotate(calc(var(--rotation, 0deg)));
         }
-        .entry:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
 
-        .content { font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.7; color: var(--text-color); }
-        .date { font-size: 0.65rem; opacity: 0.3; text-align: right; margin-top: 15px; font-family: 'Courier New', monospace; }
+        /* Rotaciones aleatorias automáticas (opcional pero le da el toque) */
+        .entry:nth-child(even) { --rotation: -1.2deg; }
+        .entry:nth-child(odd) { --rotation: 1.1deg; }
+
+        .entry:hover { 
+            transform: translateY(-10px) rotate(0deg) scale(1.02); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+            z-index: 10;
+        }
+
+        .content { font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; }
+        .date { font-size: 0.6rem; opacity: 0.4; text-align: right; margin-top: 15px; letter-spacing: 1px; }
+        
+        /* IMÁGENES DENTRO DE LA TARJETA */
         .entry img { 
-    width: calc(100% + 50px); 
-    margin-left: -25px; 
-    margin-top: 15px; 
-    margin-bottom: 5px;
-    filter: saturate(0.8); 
-    transition: filter 0.3s ease;
-}
-.entry:hover img {
-    filter: saturate(1.1); 
-}
+            width: calc(100% + 50px); 
+            margin-left: -25px; 
+            margin-top: 15px; 
+            filter: saturate(0.85);
+            transition: filter 0.3s ease;
+        }
+        .entry:hover img { filter: saturate(1.1); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -117,22 +110,22 @@
     <div class="menu-container">
         <div class="menu-arrow">➤</div>
         <div class="menu-content">
-            <button onmouseover="playPop()" onclick="filter('all')">VER TODO</button>
-            <button onmouseover="playPop()" onclick="filter('referencias')">REFERENCIAS</button>
-            <button onmouseover="playPop()" onclick="filter('pruebas-material')">PRUEBA MATERIAL</button>
-            <button onmouseover="playPop()" onclick="filter('bitacora-diaria')">BITÁCORA DIARIA</button>
-            <button onmouseover="playPop()" onclick="filter('la-vida')">LA VIDA</button>
+            <button onclick="filter('all')">VER TODO</button>
+            <button onclick="filter('referencias')">REFERENCIAS</button>
+            <button onclick="filter('pruebas-material')">PRUEBAS MATERIAL</button>
+            <button onclick="filter('bitacora-diaria')">BITÁCORA DIARIA</button>
+            <button onclick="filter('la-vida')">LA VIDA</button>
         </div>
     </div>
 
     <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
 
     <main id="feed">
-        <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice Sintérgica...</p>
+        <p style="text-align: center; opacity: 0.5;">Sintonizando la Lattice...</p>
     </main>
 
-  <script>
-   let audioCtx;
+<script>
+    let audioCtx;
     let isMusicPlaying = false;
     const notes = [216, 256.8, 324, 384, 432]; 
 
@@ -147,31 +140,9 @@
         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
     }
 
-    function playDreamMusic() {
-        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if(isMusicPlaying) return;
-        isMusicPlaying = true;
-        setInterval(() => {
-            if(!document.body.classList.contains('dark-mode')) return;
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            const freq = notes[Math.floor(Math.random() * notes.length)];
-            osc.type = 'sine'; 
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            g.gain.setValueAtTime(0, audioCtx.currentTime);
-            g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
-            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
-            osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 8);
-        }, 8000);
-    }
-
     function toggleDarkMode() {
         playPop();
         document.body.classList.toggle('dark-mode');
-        if(document.body.classList.contains('dark-mode')) {
-            playDreamMusic();
-        }
     }
 
     function filter(cat) {
@@ -179,33 +150,28 @@
         const entries = document.querySelectorAll('.entry');
         entries.forEach(entry => {
             const category = entry.getAttribute('data-category') || '';
-            entry.style.display = (cat === 'all' || category === cat) ? 'flex' : 'none';
+            // Ajuste para que coincida con tus nombres de Discord
+            if (cat === 'all' || category.includes(cat)) {
+                entry.style.display = 'flex';
+            } else {
+                entry.style.display = 'none';
+            }
         });
     }
 
     async function loadBitacora() {
         const feed = document.getElementById('feed');
-        
         try {
-            // SINTONÍA: Llamada a tu API de Vercel
             const response = await fetch('/api/get-lattice');
             const records = await response.json();
-
             if (feed) feed.innerHTML = ''; 
 
-            if (!records || records.length === 0) {
-                feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">Frecuencia vacía...</p>';
-                return;
-            }
-
             records.forEach((record) => {
-                const f = record.fields; // Accedemos a los campos de Airtable
-                
+                const f = record.fields;
                 const msg = f.mensaje || '';
                 const canal = (f.canal || 'S/N').toLowerCase();
-                const rawFecha = f["fecha y hora"]; // Nombre real en tu tabla
+                const rawFecha = f["fecha y hora"];
                 
-                // Extraer la foto optimizada
                 let foto = '';
                 if (f.archivo && f.archivo[0]) {
                     foto = f.archivo[0].thumbnails?.large?.url || f.archivo[0].url;
@@ -217,15 +183,12 @@
                 entry.className = 'entry';
                 entry.setAttribute('data-category', canal);
                 
-                const imgHtml = foto ? `<img src="${foto}" loading="lazy" class="lattice-img" onerror="this.style.display='none'">` : '';
+                const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
                 
-                // Formateo de fecha robusto
                 let fechaDisplay = '---';
                 if (rawFecha) {
                     const d = new Date(rawFecha);
-                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
-                        day:'2-digit', month:'short', year:'numeric' 
-                    }).toUpperCase();
+                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL').toUpperCase();
                 }
 
                 entry.innerHTML = `
@@ -233,18 +196,13 @@
                     ${imgHtml}
                     <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
                 `;
-                if (feed) feed.appendChild(entry);
+                feed.appendChild(entry);
             });
-
-            console.log("Lattice OS1 sintonizada.");
-
         } catch (e) {
-            console.error("Lattice bloqueada:", e);
-            if (feed) feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">Interferencia en la señal...</p>';
+            console.error(e);
+            feed.innerHTML = 'Error en la sintonía.';
         }
     }
-
-    // Iniciar carga al cargar la página
     window.onload = loadBitacora;
 </script>
 </body>
