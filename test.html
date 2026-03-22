@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Bitácora</title>
+</head>
+<body>
+    <h1>Test de carga</h1>
+    <div id="output">Cargando...</div>
+
+    <script>
+        console.log("Script iniciado");
+        
+        const url = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Datos recibidos:", data);
+                document.getElementById('output').innerHTML = '<pre>' + JSON.stringify(data, null, 2).substring(0, 1000) + '</pre>';
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('output').innerHTML = 'Error: ' + error.message;
+            });
+    </script>
+</body>
+</html>
