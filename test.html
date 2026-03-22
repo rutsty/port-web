@@ -1,50 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Test Sintonía Airtable</title>
+    <title>🛰️ Test Sintonía Lattice</title>
+    <style>
+        body { font-family: monospace; background: #0a0a0a; color: #00ff41; padding: 20px; line-height: 1.4; }
+        #console { background: #000; border: 1px solid #00ff41; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,255,65,0.2); }
+        .error { color: #ff3e3e; }
+        .success { color: #00ff41; }
+        .info { color: #3eb4ff; }
+        pre { white-space: pre-wrap; word-wrap: break-word; font-size: 0.85em; opacity: 0.8; }
+        .loading::after { content: '...'; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+    </style>
 </head>
 <body>
-    <h1>🛰️ Test de carga: Airtable Directo</h1>
-    <div id="output">Cargando datos desde la base...</div>
+    <h1>LATTICE_TEST_v2.0</h1>
+    <div id="console">
+        <div id="status" class="loading">Iniciando protocolo de sintonía segura</div>
+        <hr style="border: 0.5px solid #00ff41; margin: 15px 0;">
+        <div id="output"></div>
+    </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        const baseId = 'appondFVTjAbYGUxP/tbl51JlRNS7Idj67j/viw9kUg0WhUFaBunY';      // Lo sacas de la URL de Airtable (empieza con app...)
-        const tableId = 'Bitacora'; // El nombre exacto de tu tabla (ej: Bitacora)
-        const token = '';      // El que empieza con pat... (el de solo lectura)
+        const status = document.getElementById('status');
+        const output = document.getElementById('output');
 
-        // Construimos la URL con orden descendente por fecha
-        const url = `https://api.airtable.com/v0/${baseId}/${tableId}?sort[0][field]=fecha&sort[0][direction]=desc`;
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+            output.appendChild(div);
+        }
 
-        console.log("Iniciando conexión con Airtable...");
+        async function sintonizar() {
+            log("Llamando al puente de Vercel: /api/get-lattice", "info");
 
-        fetch(url, {
-            headers: { 
-                'Authorization': `Bearer ${token}` 
+            try {
+                // LLAMADA A LA API INTERNA
+                const response = await fetch('/api/get-lattice');
+                
+                if (response.status === 404) {
+                    throw new Error("El archivo /api/get-lattice.js no fue encontrado. ¿Subiste la carpeta 'api'?");
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`Error en el servidor Vercel: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                // VALIDACIÓN DE DATOS
+                const records = data.records || data; // Maneja ambos formatos (completo o solo records)
+                
+                if (!Array.isArray(records) || records.length === 0) {
+                    throw new Error("Conexión exitosa pero no se encontraron registros en Airtable.");
+                }
+
+                status.innerHTML = "✅ SINTONÍA ESTABLECIDA";
+                status.className = "success";
+                log(`Se han detectado ${records.length} registros en la frecuencia.`, "success");
+
+                // MUESTRA DEL PRIMER REGISTRO COMO PRUEBA
+                const first = records[0].fields;
+                log("Verificando integridad del primer registro...", "info");
+                
+                const resumen = {
+                    mensaje: first.mensaje || "VACÍO",
+                    canal: first.canal || "VACÍO",
+                    tiene_foto: first.archivo && first.archivo[0] ? "SÍ" : "NO",
+                    fecha: first.fecha || "VACÍO"
+                };
+
+                const pre = document.createElement('pre');
+                pre.innerHTML = JSON.stringify(resumen, null, 2);
+                output.appendChild(pre);
+
+            } catch (error) {
+                status.innerHTML = "❌ FALLO DE SINTONÍA";
+                status.className = "error";
+                log(error.message, "error");
+                log("Sugerencia: Revisa que AIRTABLE_TOKEN esté en Settings > Environment Variables de Vercel.", "info");
             }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Error de conexión: " + response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log("Señal recibida:", data);
-            
-            // Mostramos los primeros 2000 caracteres del JSON crudo para verificar
-            const rawData = JSON.stringify(data, null, 2);
-            document.getElementById('output').innerHTML = `
-                <p style="color: green;">✅ ¡Sintonizado con éxito!</p>
-                <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd;">${rawData.substring(0, 2000)}</pre>
-            `;
-        })
-        .catch(error => {
-            console.error("Error en la Lattice:", error);
-            document.getElementById('output').innerHTML = `
-                <p style="color: red;">❌ Error de sintonía:</p>
-                <code>${error.message}</code>
-            `;
-        });
+        }
+
+        sintonizar();
     </script>
 </body>
 </html>
