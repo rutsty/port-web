@@ -174,80 +174,75 @@
     }
 
     async function loadBitacora() {
-        const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
+    const finalURL = 'https://raw.githubusercontent.com/rutsty/port-web/refs/heads/main/datos_bitacora.json?t=' + Date.now();
+    
+    try {
+        const response = await fetch(finalURL);
+        let rawText = await response.text();
         
-        try {
-            const response = await fetch(finalURL);
-            let rawText = await response.text();
+        // Limpieza básica
+        let cleanText = rawText.trim();
+        const firstBracket = cleanText.indexOf('[');
+        const lastBracket = cleanText.lastIndexOf(']');
+        if (firstBracket !== -1 && lastBracket !== -1) {
+            cleanText = cleanText.substring(firstBracket, lastBracket + 1);
+        }
+
+        // AHORA: data es directamente el array
+        const data = JSON.parse(cleanText);
+
+        const feed = document.getElementById('feed');
+        if (feed) feed.innerHTML = ''; 
+
+        if (!data || data.length === 0) {
+            feed.innerHTML = '<p style="text-align: center; opacity: 0.5;">No hay datos disponibles</p>';
+            return;
+        }
+
+        data.forEach((item) => {
+            const msg = item.mensaje || '';
+            const canal = (item.canal || 'S/N').toLowerCase();
+            const rawFecha = item["fecha y hora"] || item.fecha;
             
-            // 1. LIMPIEZA AGRESIVA DE MAKE (Buscamos el JSON real entre la basura)
-            let cleanText = rawText.trim();
-            const firstBracket = cleanText.indexOf('{');
-            const lastBracket = cleanText.lastIndexOf('}');
-            if (firstBracket !== -1 && lastBracket !== -1) {
-                cleanText = cleanText.substring(firstBracket, lastBracket + 1);
+            // Extraer la foto
+            let foto = '';
+            if (item.archivo && Array.isArray(item.archivo) && item.archivo[0]) {
+                foto = item.archivo[0].thumbnails?.large?.url || 
+                       item.archivo[0].thumbnails?.full?.url || 
+                       item.archivo[0].url;
+            } else if (item.url_foto) {
+                foto = item.url_foto;
             }
 
-            const json = JSON.parse(cleanText);
+            if (!msg && !foto) return;
+
+            const entry = document.createElement('article');
+            entry.className = 'entry';
+            entry.setAttribute('data-category', canal);
             
-            // Buscamos la lista en Array, array o el objeto mismo
-            let data = json.Array || json.array || [];
+            const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
+            
+            let fechaDisplay = '---';
+            if (rawFecha) {
+                const d = new Date(rawFecha);
+                fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
+                    day:'2-digit', month:'short', year:'numeric' 
+                }).toUpperCase();
+            }
 
-            const feed = document.getElementById('feed');
-            if (feed) feed.innerHTML = ''; 
+            entry.innerHTML = `
+                <div class="content">${msg.replace(/\n/g, '<br>')}</div>
+                ${imgHtml}
+                <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+            `;
+            if (feed) feed.appendChild(entry);
+        });
 
-            data.forEach((item) => {
-                // 2. EL ABRE-LATAS: Si el item es un texto con comillas, lo parseamos
-                let content;
-                try {
-                    content = (typeof item === 'string') ? JSON.parse(item) : item;
-                } catch(e) { return; } 
-
-                if (!content || typeof content !== 'object') return;
-
-                // Mapeo flexible de campos
-                const msg = content.mensaje || '';
-                const canal = (content.canal || 'S/N').toLowerCase();
-                const rawFecha = content["fecha y hora"] || content.fecha;
-                
-                // 3. EXTRACTOR DE IMÁGENES (Buceo profundo en Airtable)
-                let foto = '';
-                if (content.archivo && Array.isArray(content.archivo) && content.archivo[0]) {
-                    foto = content.archivo[0].thumbnails?.large?.url || content.archivo[0].url;
-                } else if (content.url_foto) {
-                    foto = content.url_foto;
-                }
-
-                if (!msg && !foto) return;
-
-                const entry = document.createElement('article');
-                entry.className = 'entry';
-                entry.setAttribute('data-category', canal);
-                
-                const imgHtml = foto ? `<img src="${foto}" loading="lazy">` : '';
-                
-                let fechaDisplay = '---';
-                if (rawFecha) {
-                    const d = new Date(rawFecha);
-                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL', { 
-                        day:'2-digit', month:'short', year:'numeric' 
-                    }).toUpperCase();
-                }
-
-                entry.innerHTML = `
-                    <div class="content">${msg}</div>
-                    ${imgHtml}
-                    <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
-                `;
-                if (feed) feed.appendChild(entry);
-            });
-
-        } catch (e) {
-            console.error("Lattice bloqueada:", e);
-        }
+    } catch (e) {
+        console.error("Lattice bloqueada:", e);
+        document.getElementById('feed').innerHTML = '<p style="text-align: center; opacity: 0.5;">Error al cargar los datos</p>';
     }
-
-    loadBitacora();
+}
 </script>
 </body>
 </html>
