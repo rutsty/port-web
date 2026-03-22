@@ -29,7 +29,7 @@
             overflow-x: hidden;
         } 
         
-        /* BOTÓN THEME */
+       
         #theme-toggle {
             position: fixed; top: 25px; left: 35px; z-index: 3000;
             background: transparent; border: 1px solid var(--text-color);
@@ -37,7 +37,7 @@
             cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
         }
 
-        /* MENÚ */
+  
         .menu-container {
             position: fixed; top: 25px; right: 35px; z-index: 3000;
             text-align: right;
@@ -57,7 +57,7 @@
         }
         .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
 
-        /* TÍTULO AGRANDADO */
+    
         header { padding: 15vh 0 8vh; text-align: center; }
         h1 { 
             font-weight: 700; 
@@ -69,7 +69,7 @@
             transition: 0.5s ease;
         }
 
-        /* FEED MASONRY */
+ 
         #feed { 
             column-count: 4; column-gap: 20px;
             padding: 20px; max-width: 95vw; margin: 0 auto;
@@ -79,7 +79,7 @@
         @media (max-width: 850px) { #feed { column-count: 2; } }
         @media (max-width: 550px) { #feed { column-count: 1; } }
 
-        /* POSTS (DERECHOS PERO CON EFECTO) */
+
         .entry { 
             break-inside: avoid; margin-bottom: 25px;
             background: var(--entry-bg); padding: 25px; 
@@ -93,7 +93,7 @@
         .entry:hover { 
             transform: translateY(-12px) scale(1.03); 
             box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-            z-index: 100; /* Salta al frente de todos */
+            z-index: 100; 
             border-color: var(--accent);
         }
 
