@@ -23,8 +23,8 @@
 
         .referencias {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            bottom: 20px; /* Posición desde abajo */
+            right: 20px;  /* Posición desde la derecha */
             text-align: right;
             font-size: 0.65rem;
             line-height: 1.4;
@@ -32,6 +32,8 @@
             font-style: italic;
             z-index: 1000;
             pointer-events: none;
+            border-right: 1px solid #eee; /* Un pequeño detalle visual */
+            padding-right: 10px;
         }
 
         .intro {
@@ -102,16 +104,17 @@
 <body>
 
     <div class="referencias">
+        Referencias:
         Teoría Sintergial, Jacobo Grinberg<br>
         Encontrarnos en medio del universo, Karen Barad<br>
         Glitch Feminism: A Manifesto (2020), Legacy Russell
     </div>
 
     <div class="intro">
-        [REPROGRAMACIÓN]<br>
-        Sintoniza el espacio latente.<br>
-        Habitar la cicatriz del proceso.
+        [GLOSARIO] 
     </div>
+
+
 
     <div id="universo-eter">
 
