@@ -3,359 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⋆.˚ ☼⋆𓇼｡𖦹˙༄.° </title>
+    <title>LATTICE_OS1 — tecnoternura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --bg-color: #fafafa; 
-            --text-color: #1a4a75; 
-            --entry-bg: #ffffff;
-            --accent: #5dade2;
-            --menu-bg: rgba(255, 255, 255, 0.9);
-            --border-subtle: rgba(128,128,128,0.08);
+        :root {
+            --rosa: #f2a7c3;
+            --rosa-pale: #fde8f0;
+            --rosa-deep: #c96b96;
+            --cream: #fdf6ee;
+            --ink: #2a1a2e;
+            --ink-light: #6b4c6e;
+            --tape: rgba(242, 167, 195, 0.45);
+            --paper: #faf3e8;
+            --paper-dark: #f0e6d3;
+            --glitch: #7fffd4;
         }
 
-        body.dark-mode { 
-            --bg-color: #0b0f19; 
-            --text-color: #94e2d5; 
-            --entry-bg: #161b22;
-            --menu-bg: rgba(22, 27, 34, 0.95);
-            --border-subtle: rgba(148, 226, 213, 0.1);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { 
-            background-color: var(--bg-color); 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 0;
-            color: var(--text-color);
-            transition: background-color 1.2s ease, color 1.2s ease;
+        body {
+            background-color: var(--cream);
+            background-image: 
+                radial-gradient(ellipse at 20% 50%, rgba(242,167,195,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(201,107,150,0.06) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+            font-family: 'DM Mono', monospace;
+            color: var(--ink);
+            min-height: 100vh;
             overflow-x: hidden;
-        } 
-        
-        #theme-toggle {
-            position: fixed; top: 25px; left: 35px; z-index: 3000;
-            background: transparent; border: 1px solid var(--text-color);
-            color: var(--text-color); padding: 5px 15px; border-radius: 50px;
-            cursor: pointer; font-size: 0.9rem; transition: all 0.4s ease;
         }
 
-        .menu-container {
-            position: fixed; top: 25px; right: 35px; z-index: 3000;
-            text-align: right;
-        }
-        .menu-arrow { font-size: 1.5rem; cursor: pointer; opacity: 0.4; display: inline-block; transform: rotate(90deg); color: var(--text-color); }
-        .menu-content {
-            display: none; background: var(--menu-bg); 
-            backdrop-filter: blur(12px); border-radius: 12px; padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(128,128,128,0.2);
-        }
-        .menu-container:hover .menu-content { display: block; animation: fadeIn 0.3s ease; }
-        .menu-content button {
-            display: block; width: 100%; background: none; border: none;
-            padding: 10px 20px; text-align: right; cursor: pointer;
-            font-size: 0.8rem; letter-spacing: 2px; color: var(--text-color);
-            transition: 0.3s ease;
-        }
-        .menu-content button:hover { color: var(--accent); transform: translateX(-5px); }
+        /* CURSOR */
+        body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%23f2a7c3' opacity='0.8'/%3E%3C/svg%3E") 10 10, crosshair; }
 
-        header { padding: 15vh 0 8vh; text-align: center; }
-        
-        /* ===== TÍTULO CON FLOTACIÓN Y GLITCH SUTIL ===== */
-        h1 { 
-            font-weight: 700; 
-            letter-spacing: 12px; 
-            text-transform: uppercase; 
-            font-size: 1.4rem; 
-            opacity: 0.8; 
-            margin: 0;
-            transition: all 0.3s ease;
-            display: inline-block;
-            animation: floatGlitch 5s infinite ease-in-out;
-            cursor: default;
-        }
-        
-        @keyframes floatGlitch {
-            0%, 100% { 
-                transform: translateY(0px); 
-                text-shadow: 0 0 0 transparent;
-            }
-            50% { 
-                transform: translateY(-4px); 
-                text-shadow: 
-                    1px 0 rgba(90, 160, 220, 0.2),
-                    -1px 0 rgba(220, 90, 160, 0.2);
-            }
-        }
-        
-        /* Glitch más pronunciado al hover */
-        h1:hover {
-            animation: glitchRipple 0.25s ease-in-out;
-            text-shadow: 
-                2px 0 rgba(90, 160, 220, 0.5),
-                -2px 0 rgba(220, 90, 160, 0.5);
-            letter-spacing: 14px;
-            transform: scale(1.01);
-        }
-        
-        @keyframes glitchRipple {
-            0% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
-            20% { transform: translateX(2px) scale(1.01); letter-spacing: 14px; }
-            40% { transform: translateX(-1px) scale(1.01); letter-spacing: 13px; }
-            60% { transform: translateX(1px) scale(1.01); letter-spacing: 14px; }
-            80% { transform: translateX(-0.5px) scale(1); letter-spacing: 12px; }
-            100% { transform: translateX(0px) scale(1); letter-spacing: 12px; }
-        }
-
-        /* ===== GRID ===== */
-        #feed { 
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            padding: 20px;
-            max-width: 95vw;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 1200px) { #feed { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 850px) { #feed { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 550px) { #feed { grid-template-columns: 1fr; } }
-
-        /* ===== ENTRADAS ===== */
-        .entry { 
-            background: var(--entry-bg); 
-            padding: 22px;
-            padding-bottom: 35px;
-            border: 1px solid var(--border-subtle);
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            display: flex; 
+        /* HEADER */
+        header {
+            padding: 4rem 3rem 2rem;
+            display: flex;
             flex-direction: column;
+            align-items: center;
             position: relative;
-            z-index: 1;
-            backdrop-filter: blur(2px);
-            
-            transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px));
-            margin-bottom: 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
-        /* Rotaciones diferentes para cada entrada */
-        .entry:nth-child(odd) { --rot: -0.8deg; --y-offset: 2px; }
-        .entry:nth-child(even) { --rot: 0.6deg; --y-offset: -1px; }
-        .entry:nth-child(3n) { --rot: 1.2deg; --y-offset: 3px; }
-        .entry:nth-child(5n) { --rot: -1.1deg; --y-offset: -2px; }
-        .entry:nth-child(7n) { --rot: 0.3deg; --y-offset: 1px; }
-
-        /* Flotación suave */
-        .entry {
-            animation: gentleFloat 6s infinite ease-in-out;
-            animation-delay: calc(var(--order, 0) * 0.2s);
-        }
-        
-        @keyframes gentleFloat {
-            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(var(--y-offset, 0px)); }
-            50% { transform: rotate(calc(var(--rot, 0deg) + 0.5deg)) translateY(calc(var(--y-offset, 0px) - 4px)); }
-        }
-
-        .entry:hover { 
-            transform: translateY(-8px) scale(1.01) rotate(calc(var(--rot, 0deg) - 0.3deg));
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
-            z-index: 100; 
-            border-color: var(--accent);
-        }
-
-        /* ===== FECHA EN ESQUINA INFERIOR DERECHA ===== */
-        .entry .date { 
+        .header-tape {
+            width: 80px; height: 22px;
+            background: var(--tape);
             position: absolute;
-            bottom: 12px;
-            right: 16px;
-            font-size: 0.65rem; 
-            opacity: 0.4; 
-            font-family: 'Courier New', monospace;
-            margin: 0;
-            transition: opacity 0.3s ease;
+            top: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1.5deg);
+            border-radius: 2px;
         }
-        
-        .entry:hover .date {
+
+        .site-title {
+            font-family: 'Special Elite', cursive;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            text-align: center;
+            margin-top: 0.5rem;
+            position: relative;
+        }
+
+        .site-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            letter-spacing: 0.05em;
+            margin-top: 0.4rem;
             opacity: 0.7;
         }
 
-        /* ===== GLITCH MOMENTÁNEO: aparece y luego se estabiliza ===== */
-        .entry .content {
-            transition: all 0.2s ease;
-        }
-        
-        /* El glitch aparece solo al inicio del hover y luego se suaviza */
-        .entry:hover .content {
-            animation: glitchFlash 0.2s ease-in-out forwards;
-        }
-        
-        @keyframes glitchFlash {
-            0% {
-                text-shadow: none;
-                letter-spacing: normal;
-            }
-            20% {
-                text-shadow: 2px 0 rgba(255, 0, 0, 0.6), -2px 0 rgba(0, 0, 255, 0.6);
-                letter-spacing: 1.5px;
-            }
-            60% {
-                text-shadow: -1px 0 rgba(255, 0, 0, 0.4), 1px 0 rgba(0, 0, 255, 0.4);
-                letter-spacing: 0.8px;
-            }
-            100% {
-                text-shadow: 0.5px 0 rgba(255, 0, 0, 0.1), -0.5px 0 rgba(0, 0, 255, 0.1);
-                letter-spacing: 0.2px;
-            }
-        }
-        
-        /* Estado final estable después del glitch - lectura cómoda */
-        .entry:hover .content {
-            text-shadow: 0.5px 0 rgba(255, 0, 0, 0.05), -0.5px 0 rgba(0, 0, 255, 0.05);
-            letter-spacing: 0.2px;
+        .header-line {
+            width: 100%; max-width: 600px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--rosa-deep), transparent);
+            margin: 1.5rem auto 0;
+            opacity: 0.4;
         }
 
-        .content { 
-            font-family: 'Courier New', monospace; 
-            font-size: 1rem; 
-            line-height: 1.7; 
-        }
-        
-        .entry img { 
-            width: calc(100% + 44px); 
-            margin-left: -22px; 
-            margin-top: 12px; 
-            margin-bottom: -8px;
-            filter: saturate(0.7) contrast(0.95);
-            transition: 0.5s ease;
-            opacity: 0.9;
-        }
-        
-        .entry:hover img { 
-            filter: saturate(1.05) contrast(1.02);
-            opacity: 1;
+        /* NAV */
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 1.2rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(253, 246, 238, 0.88);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(242,167,195,0.2);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        nav button {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border: 1px solid var(--rosa);
+            background: transparent;
+            color: var(--ink-light);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--rosa);
+            color: var(--ink);
+        }
+
+        nav button::before {
+            content: '✦ ';
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.5rem;
+        }
+        nav button:hover::before { opacity: 1; }
+
+        /* THEME TOGGLE */
+        #theme-toggle {
+            position: fixed;
+            top: 1.2rem; left: 1.5rem;
+            z-index: 200;
+            background: none;
+            border: 1px solid var(--rosa);
+            color: var(--ink-light);
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 0.08em;
+            transition: all 0.3s;
+        }
+        #theme-toggle:hover { background: var(--rosa-pale); }
+
+        /* DARK MODE */
+        body.dark-mode {
+            --cream: #120d17;
+            --paper: #1a1020;
+            --paper-dark: #140e1a;
+            --ink: #f0d9e8;
+            --ink-light: #c9a0bc;
+            --rosa-pale: #2a1530;
+            background-color: var(--cream);
+        }
+
+        body.dark-mode nav {
+            background: rgba(18, 13, 23, 0.9);
+            border-bottom-color: rgba(242,167,195,0.1);
+        }
+
+        /* FEED SCRAPBOOK */
+        #feed {
+            column-count: 3;
+            column-gap: 20px;
+            padding: 2.5rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1000px) { #feed { column-count: 2; } }
+        @media (max-width: 600px) { #feed { column-count: 1; padding: 1.5rem 1rem; } }
+
+        /* ENTRY CARD — scrapbook style */
+        .entry {
+            break-inside: avoid;
+            margin-bottom: 22px;
+            background: var(--paper);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+        }
+
+        /* Rotaciones alternadas para efecto scrapbook */
+        .entry:nth-child(3n+1) { transform: rotate(-0.6deg); }
+        .entry:nth-child(3n+2) { transform: rotate(0.4deg); }
+        .entry:nth-child(3n+3) { transform: rotate(-0.2deg); }
+        .entry:hover { transform: rotate(0deg) translateY(-4px) scale(1.01); box-shadow: 0 12px 40px rgba(42,26,46,0.15); z-index: 10; }
+
+        /* Cinta adhesiva decorativa */
+        .entry::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            width: 55px; height: 18px;
+            background: var(--tape);
+            border-radius: 1px;
+            z-index: 2;
+        }
+
+        .entry:nth-child(even)::before {
+            left: auto; right: 15%;
+            transform: rotate(2deg);
+        }
+
+        /* Sombra de papel */
+        .entry::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            box-shadow: inset 0 0 0 1px rgba(42,26,46,0.06), 3px 3px 0 rgba(42,26,46,0.04);
+            pointer-events: none;
+        }
+
+        .entry-inner {
+            padding: 22px 20px 18px;
+        }
+
+        /* Categoría tag */
+        .entry-cat {
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--rosa-deep);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .entry-cat::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--rosa); }
+
+        /* Contenido */
+        .content {
+            font-family: 'Special Elite', cursive;
+            font-size: 0.82rem;
+            line-height: 1.75;
+            color: var(--ink);
+            word-break: break-word;
+        }
+
+        /* Imagen */
+        .entry img {
+            width: calc(100% + 40px);
+            margin-left: -20px;
+            margin-top: 14px;
+            display: block;
+            filter: saturate(0.85) sepia(0.08);
+            transition: filter 0.4s;
+        }
+        .entry:hover img { filter: saturate(1) sepia(0); }
+
+        /* Imagen al inicio (sin texto previo) */
+        .entry.img-first img {
+            margin-top: -22px;
+            margin-bottom: 0;
+        }
+        .entry.img-first .entry-inner { padding-top: 28px; }
+
+        /* Fecha */
+        .date {
+            font-size: 0.58rem;
+            opacity: 0.35;
+            text-align: right;
+            margin-top: 14px;
+            letter-spacing: 0.08em;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Líneas de papel de fondo */
+        .entry-lines {
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent calc(1.75rem - 1px),
+                rgba(242,167,195,0.12) calc(1.75rem - 1px),
+                rgba(242,167,195,0.12) 1.75rem
+            );
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Estado vacío */
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem;
+            opacity: 0.4;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        /* ANIMACIÓN ENTRADA */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px) rotate(-1deg); }
+            to { opacity: 1; }
+        }
+        .entry { animation: fadeUp 0.5s ease both; }
+        .entry:nth-child(1) { animation-delay: 0.05s; }
+        .entry:nth-child(2) { animation-delay: 0.1s; }
+        .entry:nth-child(3) { animation-delay: 0.15s; }
+        .entry:nth-child(4) { animation-delay: 0.2s; }
+        .entry:nth-child(5) { animation-delay: 0.25s; }
+        .entry:nth-child(n+6) { animation-delay: 0.3s; }
+
+        /* Glitch sutil en hover del título */
+        .site-title:hover { animation: glitch 0.3s steps(2) 1; }
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--rosa), -2px 0 var(--glitch); }
+            50% { text-shadow: -2px 0 var(--rosa), 2px 0 var(--glitch); }
+            100% { text-shadow: none; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--rosa); border-radius: 99px; }
     </style>
 </head>
 <body>
 
-    <button id="theme-toggle" onclick="toggleDarkMode()">⋅˚.⋆☾⁺₊ ‧</button>
+<button id="theme-toggle" onclick="toggleDarkMode()">⋅˚.☾ modo</button>
 
-    <div class="menu-container">
-        <div class="menu-arrow">➤</div>
-        <div class="menu-content">
-            <button onclick="filter('all')">VER TODO</button>
-            <button onclick="filter('referencias')">REFERENCIAS</button>
-            <button onclick="filter('pruebas-material')">MATERIAL</button>
-            <button onclick="filter('bitacora-diaria')">DIARIA</button>
-            <button onclick="filter('la-vida')">LA VIDA</button>
-        </div>
-    </div>
+<header>
+    <div class="header-tape"></div>
+    <h1 class="site-title">✦ L A T T I C E _ O S 1 ✦</h1>
+    <p class="site-subtitle">bitácora de creación </p>
+    <div class="header-line"></div>
+</header>
 
-    <header><h1>✧･ﾟ: * [ L A T T I C E _ O S 1 ] *:･ﾟ✧</h1></header>
+<nav>
+    <button class="active" onclick="filter('all', this)">✦ todo</button>
+    <button onclick="filter('referencias', this)">referencias</button>
+    <button onclick="filter('material', this)">prueba material</button>
+    <button onclick="filter('diaria', this)">bitácora diaria</button>
+    <button onclick="filter('vida', this)">la vida</button>
+</nav>
 
-    <main id="feed">
-        <p style="text-align: center; opacity: 0.5;">Iniciando sistema...</p>
-    </main>
+<main id="feed">
+    <p class="empty-state">sintonizando la lattice sintérgica...</p>
+</main>
 
 <script>
+    // --- AUDIO ---
     let audioCtx;
-    let isMusicPlaying = false;
-    const notes = [216, 256.8, 324, 384, 432]; 
-
     function playPop() {
-        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
-        g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1300, audioCtx.currentTime + 0.04);
+        g.gain.setValueAtTime(0.008, audioCtx.currentTime);
+        g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.12);
         osc.connect(g); g.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-    }
-
-    function playDreamMusic() {
-        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if(isMusicPlaying) return;
-        isMusicPlaying = true;
-        setInterval(() => {
-            if(!document.body.classList.contains('dark-mode')) return;
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            const freq = notes[Math.floor(Math.random() * notes.length)];
-            osc.type = 'sine'; 
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            g.gain.setValueAtTime(0, audioCtx.currentTime);
-            g.gain.linearRampToValueAtTime(0.007, audioCtx.currentTime + 3); 
-            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 7);
-            osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 8);
-        }, 8000);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
     }
 
     function toggleDarkMode() {
         playPop();
         document.body.classList.toggle('dark-mode');
-        if(document.body.classList.contains('dark-mode')) {
-            playDreamMusic();
-        }
     }
 
-    function filter(cat) {
+    // --- FILTER ---
+    function filter(cat, btn) {
         playPop();
-        const entries = document.querySelectorAll('.entry');
-        entries.forEach(entry => {
-            const category = entry.getAttribute('data-category') || '';
-            entry.style.display = (cat === 'all' || category.includes(cat)) ? 'flex' : 'none';
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        document.querySelectorAll('.entry').forEach(e => {
+            const show = cat === 'all' || e.dataset.category.toLowerCase().includes(cat);
+            e.style.display = show ? '' : 'none';
         });
     }
 
+    // --- CARGA DE DATOS (misma lógica que el original) ---
+    const repoURL = 'https://raw.githubusercontent.com/rutsty/port-web/main/datos_bitacora.json';
+
     async function loadBitacora() {
-        const feed = document.getElementById('feed');
         try {
-            const response = await fetch('/api/get-lattice');
-            const records = await response.json();
-            if (feed) feed.innerHTML = ''; 
+            const response = await fetch(repoURL);
+            const data = await response.json();
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
 
-            records.forEach((record, index) => {
-                const f = record.fields;
-                const msg = f.mensaje || '';
-                const canal = (f.canal || 'S/N').toLowerCase();
-                const rawFecha = f["fecha y hora"];
-                
-                let foto = '';
-                if (f.archivo && f.archivo[0]) {
-                    foto = f.archivo[0].thumbnails?.large?.url || f.archivo[0].url;
-                }
-
-                if (!msg && !foto) return;
-
+            data.forEach((item, i) => {
                 const entry = document.createElement('article');
                 entry.className = 'entry';
-                entry.setAttribute('data-category', canal);
-                entry.style.setProperty('--order', index);
-                
-                const imgHtml = foto ? `<img src="${foto}" loading="lazy" onerror="this.style.display='none'">` : '';
-                
-                let fechaDisplay = '---';
-                if (rawFecha) {
-                    const d = new Date(rawFecha);
-                    fechaDisplay = isNaN(d) ? '---' : d.toLocaleDateString('es-CL').toUpperCase();
-                }
+                entry.setAttribute('data-category', (item.canal || '').toLowerCase());
+
+                const fecha = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', {
+                    day: '2-digit', month: 'short', year: 'numeric'
+                }).toUpperCase();
+
+                const canal = (item.canal || 'diaria').toUpperCase();
+
+                // Si hay imagen y no hay mensaje, card de imagen primero
+                const soloImg = item.archivo && (!item.mensaje || item.mensaje.trim() === '');
+                if (soloImg) entry.classList.add('img-first');
 
                 entry.innerHTML = `
-                    <div class="content">${msg.replace(/\n/g, '<br>')}</div>
-                    ${imgHtml}
-                    <span class="date">${fechaDisplay} | CH_${canal.toUpperCase()}</span>
+                    <div class="entry-lines"></div>
+                    <div class="entry-inner">
+                        <div class="entry-cat">${canal}</div>
+                        ${item.mensaje ? `<div class="content">${item.mensaje}</div>` : ''}
+                        ${item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="evidencia visual">` : ''}
+                        <div class="date">${fecha}</div>
+                    </div>
                 `;
+
                 feed.appendChild(entry);
             });
-        } catch (e) {
-            console.error(e);
-            feed.innerHTML = '<p style="text-align:center">Interferencia en la señal.</p>';
+
+        } catch (error) {
+            console.warn('Error conectando a la Lattice:', error);
+            document.getElementById('feed').innerHTML = '<p class="empty-state">error al recuperar la memoria...</p>';
         }
     }
-    window.onload = loadBitacora;
+
+    loadBitacora();
 </script>
 </body>
 </html>
