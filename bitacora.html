@@ -330,7 +330,7 @@
 <header>
     <div class="header-tape"></div>
     <h1 class="site-title">✦ L A T T I C E _ O S 1 ✦</h1>
-    <p class="site-subtitle">bitácora de creación </p>
+    <p class="site-subtitle">bitácora de creación — tecnoternura</p>
     <div class="header-line"></div>
 </header>
 
@@ -383,31 +383,60 @@
     async function loadBitacora() {
         try {
             const response = await fetch(repoURL);
-            const data = await response.json();
+            const raw = await response.json();
             const feed = document.getElementById('feed');
             feed.innerHTML = '';
 
-            data.forEach((item, i) => {
+            // El JSON de Make tiene estructura { "Array": ["{ json string }", ...] }
+            // Cada elemento del Array es un string que hay que parsear
+            let items = [];
+            if (raw.Array && Array.isArray(raw.Array)) {
+                items = raw.Array.map(str => {
+                    try { return typeof str === 'string' ? JSON.parse(str) : str; }
+                    catch(e) { return null; }
+                }).filter(item => item && (item.mensaje || item.archivo));
+            } else if (Array.isArray(raw)) {
+                items = raw;
+            }
+
+            if (items.length === 0) {
+                feed.innerHTML = '<p class="empty-state">la lattice está en silencio...</p>';
+                return;
+            }
+
+            items.forEach((item) => {
+                // Normalizar campos (Make usa "fecha y hora" con espacio)
+                const fechaRaw = item['fecha_y_hora'] || item['fecha y hora'] || null;
+                const canal = (item.canal || 'diaria').toLowerCase();
+                const canalLabel = canal.toUpperCase().replace(/-/g, ' ');
+
+                // Imagen: puede ser array de objetos o string directo
+                let imgUrl = null;
+                if (item.archivo) {
+                    if (Array.isArray(item.archivo) && item.archivo.length > 0) {
+                        imgUrl = item.archivo[0].url || null;
+                    } else if (typeof item.archivo === 'string') {
+                        imgUrl = item.archivo;
+                    }
+                }
+
+                const fecha = fechaRaw
+                    ? new Date(fechaRaw).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+                    : '';
+
                 const entry = document.createElement('article');
                 entry.className = 'entry';
-                entry.setAttribute('data-category', (item.canal || '').toLowerCase());
+                entry.setAttribute('data-category', canal);
 
-                const fecha = new Date(item.fecha_y_hora).toLocaleDateString('es-CL', {
-                    day: '2-digit', month: 'short', year: 'numeric'
-                }).toUpperCase();
-
-                const canal = (item.canal || 'diaria').toUpperCase();
-
-                // Si hay imagen y no hay mensaje, card de imagen primero
-                const soloImg = item.archivo && (!item.mensaje || item.mensaje.trim() === '');
+                const soloImg = imgUrl && (!item.mensaje || item.mensaje.trim() === '');
                 if (soloImg) entry.classList.add('img-first');
 
                 entry.innerHTML = `
                     <div class="entry-lines"></div>
                     <div class="entry-inner">
-                        <div class="entry-cat">${canal}</div>
+                        <div class="entry-cat">${canalLabel}</div>
                         ${item.mensaje ? `<div class="content">${item.mensaje}</div>` : ''}
-                        ${item.archivo ? `<img src="${item.archivo}" loading="lazy" alt="evidencia visual">` : ''}
+                        ${imgUrl ? `<img src="${imgUrl}" loading="lazy" alt="evidencia visual">` : ''}
                         <div class="date">${fecha}</div>
                     </div>
                 `;
