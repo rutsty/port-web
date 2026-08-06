@@ -142,6 +142,28 @@
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         #matrix-canvas { display: block; width: 100%; height: 100%; }
 
+        .marquee-box {
+            background: #222; 
+            color: #51d1f6; /* Usé el tono celeste original de tu web para hacer contraste hacker */
+            padding: 6px; 
+            font-size: 0.85rem; 
+            border-top: 2px solid var(--borde-ventana); 
+            overflow: hidden; 
+            white-space: nowrap; 
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 12s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
     </style>
 </head>
 <body>
@@ -260,10 +282,6 @@
                 <h4 style="border-bottom: 1px solid var(--color-secundario); padding-bottom: 5px; margin-top: 25px;">Principio n.º 7: Habitabilidad de los metaversos (La última aldea).</h4>
                 <p>Extendemos este manifiesto a los nuevos territorios que habitamos: los metaversos, los mundos de rol online, las plataformas inmersivas y cualquier espacio digital donde se forjen comunidades. Declaramos que el dolor que se siente en un espacio virtual es dolor real. Porque lo que consideramos "no real" también duele. Exigimos que estos nuevos mundos se construyan sobre una arquitectura del cuidado, para que sean, por fin, un lugar donde sentir el calor.</p>
                 
-             
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="action-btn" onclick="alert('Descarga de Manifiesto.txt iniciada... (Simulación)')">⬇ Descargar Versión de Texto</button>
-                </div>
             </div>
         </div>
 
@@ -405,20 +423,22 @@ que también nos sostenemos en las fisuras.
         </div>
 
     
-        <div class="os-window hidden" id="reproductor-window" style="top: 25%; left: 25%; width: 400px;">
+       <div class="os-window hidden" id="reproductor-window" style="top: 25%; left: 25%; width: 400px;">
             <div class="barra-titulo drag-handle">
                 <span class="window-title">Music_Player.exe</span>
                 <span class="botones"><span onclick="minimizeWindow('reproductor-window', event)">_</span><span onclick="closeWindow('reproductor-window', event)">X</span></span>
             </div>
             <div class="window-content" style="padding: 0; background: #000; display: flex; flex-direction: column;">
                 <iframe width="100%" height="250" src="https://www.youtube.com/embed/VjLP9Z-01Ys?playlist=ihpF18eyjZc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <div style="background: #333; color: var(--color-secundario); padding: 5px; text-align: center; font-size: 0.8rem; border-top: 2px solid var(--borde-ventana);">
-                    Reproduciendo Playlist: Tecnoternura Mix...
+                
+                <!-- Efecto marquesina Winamp -->
+                <div class="marquee-box">
+                    <div class="marquee-content">
+                        ▶ Reproduciendo Playlist: Tecnoternura Mix... ✧ Pista 1: VjLP9Z-01Ys ✧ Pista 2: ihpF18eyjZc ✧
+                    </div>
                 </div>
             </div>
         </div>
-
-    </div>
 
 
     <div class="taskbar">
